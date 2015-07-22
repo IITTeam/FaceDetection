@@ -19,7 +19,7 @@ namespace FaceDetection.Core
             synth.SetOutputToDefaultAudioDevice();
 
             // Speak a string.
-            synth.Speak(text);
+            synth.SpeakAsync(text);
         }
     }
 }
