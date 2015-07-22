@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.IO;
 using FaceDetection.Core;
 using Emgu.CV;
 using Emgu.CV.Structure;
@@ -48,7 +49,7 @@ namespace FaceDetection
                         break;
 
                     case "say":
-                        vs.SayText("Привет, незнакомец!", "Microsoft Irina Desktop");
+                        vs.SayText("Hi, man!", "Microsoft Hazel Desktop");
                         break;;
                     case "exit":
                         exitFlag = true;
@@ -67,16 +68,23 @@ namespace FaceDetection
 
         public static Dictionary<int, List<Image<Gray, float>>> GetSampleList()
         {
+            var fileNames = Directory.GetFiles("Images\\Danil\\", "*.jpg");
             var resultDict = new Dictionary<int, List<Image<Gray, float>>>();
-
-            var image1 = new Image<Gray, float>("Images\\1.jpg");
-            var image2 = new Image<Gray, float>("Images\\2.jpg");
-            var imageList = new List<Image<Gray, float>> {image1, image2};
+            var imageList = new List<Image<Gray, float>>();
+            foreach (string fileName in fileNames)
+            {
+                var image = new Image<Gray, float>(fileName);
+                imageList.Add(image);
+            }
             resultDict.Add(1, imageList);
 
-            var image3 = new Image<Gray, float>("Images\\3.jpg");
-            var image4 = new Image<Gray, float>("Images\\4.jpg");
-            imageList = new List<Image<Gray, float>> {image3, image4};
+            fileNames = Directory.GetFiles("Images\\Anna\\", "*.jpg");
+            imageList = new List<Image<Gray, float>>();
+            foreach (string fileName in fileNames)
+            {
+                var image = new Image<Gray, float>(fileName);
+                imageList.Add(image);
+            }
             resultDict.Add(2, imageList);
 
             return resultDict;
