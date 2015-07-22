@@ -18,15 +18,21 @@ namespace FaceDetection.Core
             faceRecognizer = new FisherFaceRecognizer();
         }
 
-        public void StartCapture()
+        public double StartCapture(Image<Gray, float> image)
         {
-
+            return Recognize(image);
         }
 
-        public void Train(Dictionary<int, List<Image<Bgr, float>>> trainSamples)
+        private double Recognize(Image<Gray, float> image)
+        {
+            var result = faceRecognizer.Predict(image);
+            return result.Distance;
+        }
+
+        public void Train(Dictionary<int, List<Image<Gray, float>>> trainSamples)
         {
             var labels = new List<int>();
-            var images = new List<Image<Bgr, float>>();
+            var images = new List<Image<Gray, float>>();
             foreach (var key in trainSamples.Keys)
             {
                 foreach (var image in trainSamples[key])

@@ -36,11 +36,15 @@ namespace FaceDetection
                         }
                         break;
                     case "check":
-
-                        //Зарегистрируем(создадим) модуль-"ядро"
+                        try
+                        {
+                            Console.WriteLine(ts.StartCapture(new Image<Gray, float>("Images\\4.jpg")));
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
                         
-                        ts.StartCapture();
-                        //TODO
                         break;
 
                     case "say":
@@ -61,18 +65,18 @@ namespace FaceDetection
 
         }
 
-        public static Dictionary<int, List<Image<Bgr, float>>> GetSampleList()
+        public static Dictionary<int, List<Image<Gray, float>>> GetSampleList()
         {
-            var resultDict = new Dictionary<int, List<Image<Bgr, float>>>();
+            var resultDict = new Dictionary<int, List<Image<Gray, float>>>();
 
-            var image1 = new Image<Bgr, float>("Images\\1.jpg");
-            var image2 = new Image<Bgr, float>("Images\\2.jpg");
-            var imageList = new List<Image<Bgr, float>> {image1, image2};
+            var image1 = new Image<Gray, float>("Images\\1.jpg");
+            var image2 = new Image<Gray, float>("Images\\2.jpg");
+            var imageList = new List<Image<Gray, float>> {image1, image2};
             resultDict.Add(1, imageList);
 
-            var image3 = new Image<Bgr, float>("Images\\3.jpg");
-            var image4 = new Image<Bgr, float>("Images\\4.jpg");
-            imageList = new List<Image<Bgr, float>> {image3, image4};
+            var image3 = new Image<Gray, float>("Images\\3.jpg");
+            var image4 = new Image<Gray, float>("Images\\4.jpg");
+            imageList = new List<Image<Gray, float>> {image3, image4};
             resultDict.Add(2, imageList);
 
             return resultDict;
