@@ -8,6 +8,9 @@ namespace FaceDetection
     {
         static void Main(string[] args)
         {
+            //Зарегистрируем(создадим) модуль-"ядро"
+            ServicesWorker.Registration(new CoreModule());
+
             var exitFlag = false;
             while (!exitFlag)
             {
@@ -20,9 +23,6 @@ namespace FaceDetection
                         //TODO
                         break;
                     case "check":
-
-                        //Зарегистрируем(создадим) модуль-"ядро"
-                        ServicesWorker.Registration(new CoreModule());
 
                         //Попросим у контейнера сервис 
                         var ts = ServicesWorker.GetInstance<FaceRecognizerService>();
