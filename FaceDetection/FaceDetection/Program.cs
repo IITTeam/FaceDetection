@@ -38,7 +38,7 @@ namespace FaceDetection
                     case "check":
                         try
                         {
-                            Console.WriteLine(ts.StartCapture(new Image<Gray, float>("Images\\4.jpg")));
+                            Console.WriteLine(ts.StartCapture());
                         }
                         catch (Exception ex)
                         {

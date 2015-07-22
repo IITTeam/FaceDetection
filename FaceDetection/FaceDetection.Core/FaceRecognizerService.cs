@@ -23,10 +23,19 @@ namespace FaceDetection.Core
             return Recognize(image);
         }
 
+        public double StartCapture()
+        {
+            var capture = new Capture();
+            var image = capture.QueryFrame(); //draw the image obtained from camera
+            return Recognize(image.ToImage<Gray, float>());
+        }
+
+
+
         private double Recognize(Image<Gray, float> image)
         {
             var result = faceRecognizer.Predict(image);
-            return result.Distance;
+            return result.Label;
         }
 
         public void Train(Dictionary<int, List<Image<Gray, float>>> trainSamples)
