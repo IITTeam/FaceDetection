@@ -1,4 +1,5 @@
-﻿namespace FaceDetection.Core
+﻿using FaceDetection.Core;
+namespace FaceDetection.Core
 {
     /// <summary>
     /// Модуль-"ядро" приложения
@@ -13,6 +14,7 @@
         {
             //Здесь нужно регистрировать сервисы (например: сервис распознования)
             container.RegisterService(() => new FaceRecognizerService());
+            container.RegisterService(()=>new VoiceAssistantService());
         }
     }
 }

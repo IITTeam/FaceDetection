@@ -16,6 +16,7 @@ namespace FaceDetection
 
             //Попросим у контейнера сервис 
             var ts = ServicesWorker.GetInstance<FaceRecognizerService>();
+            var vs = ServicesWorker.GetInstance<VoiceAssistantService>();
             //Дальше можно работать как просто с объектом
             while (!exitFlag)
             {
@@ -41,6 +42,10 @@ namespace FaceDetection
                         ts.StartCapture();
                         //TODO
                         break;
+
+                    case "say":
+                        vs.SayText("Привет, незнакомец!", "Microsoft Irina Desktop");
+                        break;;
                     case "exit":
                         exitFlag = true;
                         break;
