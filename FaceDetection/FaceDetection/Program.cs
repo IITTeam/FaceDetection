@@ -17,7 +17,7 @@ namespace FaceDetection
             //Дальше можно работать как просто с объектом
             ts.StartCapture();
 
-            Console.ReadLine();
+            Console.ReadKey();
 
         }
     }
