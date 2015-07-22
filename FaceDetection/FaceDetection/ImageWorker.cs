@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
+
 using Emgu.CV.Face;
 using Emgu.CV;
 using Emgu.CV.Structure;
@@ -10,12 +12,9 @@ namespace FaceDetection
 {
     class ImageWorker
     {
-        public ImageWorker()
+        static public Image<Bgr, float> GetImage(string fileName)
         {
-        }
-
-        public Image<Bgr, float> GetImage()
-        {
+            var image = Image.FromFile(fileName);
             return null;
         }
     }
