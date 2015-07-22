@@ -8,40 +8,16 @@ namespace FaceDetection
     {
         static void Main(string[] args)
         {
-            var exitFlag = false;
-            while (!exitFlag)
-            {
-                Console.Write(">> ");
-                var inputCommand = Console.ReadLine();
+            Console.WriteLine("Для завершения нажмите любую клавишу!");
+            //Зарегистрируем(создадим) модуль-"ядро"
+            ServicesWorker.Registration(new CoreModule());
 
-                switch (inputCommand)
-                {
-                    case "train":
-                        //TODO
-                        break;
-                    case "check":
+            //Попросим у контейнера сервис 
+            var ts = ServicesWorker.GetInstance<FaceRecognizerService>();
+            //Дальше можно работать как просто с объектом
+            ts.StartCapture();
 
-                        //Зарегистрируем(создадим) модуль-"ядро"
-                        ServicesWorker.Registration(new CoreModule());
-
-                        //Попросим у контейнера сервис 
-                        var ts = ServicesWorker.GetInstance<FaceRecognizerService>();
-                        //Дальше можно работать как просто с объектом
-                        ts.StartCapture();
-                        //TODO
-                        break;
-                    case "exit":
-                        exitFlag = true;
-                        break;
-                    case "help":
-                        Console.WriteLine("train check exit");
-                        break;
-                    default:
-                        Console.WriteLine("Неверная команда!");
-                        break;
-                }
-
-            }
+            Console.ReadKey();
 
         }
     }
