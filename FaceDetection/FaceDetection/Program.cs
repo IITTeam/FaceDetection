@@ -5,6 +5,7 @@ using System.IO;
 using FaceDetection.Core;
 using Emgu.CV;
 using Emgu.CV.Structure;
+using System.Data.SQLite;
 
 namespace FaceDetection
 {
