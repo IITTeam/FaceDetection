@@ -43,6 +43,15 @@
     <Reference Include="Emgu.Util">
       <HintPath>..\..\..\..\Emgu\libemgucv-windows-universal-3.0.0.2157\bin\Emgu.Util.dll</HintPath>
     </Reference>
+    <Reference Include="MongoDB.Bson">
+      <HintPath>..\Libs\mongo\MongoDB.Bson.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Driver">
+      <HintPath>..\Libs\mongo\MongoDB.Driver.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Driver.Core">
+      <HintPath>..\Libs\mongo\MongoDB.Driver.Core.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -55,7 +64,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoreModule.cs" />
+    <Compile Include="DatabaseService.cs" />
     <Compile Include="FaceRecognizerService.cs" />
+    <Compile Include="Human.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceContainer.cs" />
     <Compile Include="ServiceModule.cs" />

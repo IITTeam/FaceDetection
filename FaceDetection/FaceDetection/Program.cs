@@ -1,29 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 using System.IO;
-using FaceDetection.Core;
-using Emgu.CV;
-using Emgu.CV.Structure;
-using System.Data.SQLite;
 using System.Threading;
+using System.Windows.Forms;
+using Emgu.CV;
+using Emgu.CV.CvEnum;
+using Emgu.CV.Structure;
+using FaceDetection.Core;
 
 namespace FaceDetection
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var exitFlag = false;
             ServicesWorker.Registration(new CoreModule());
-
 
 
             //Попросим у контейнера сервис 
             var ts = ServicesWorker.GetInstance<FaceRecognizerService>();
             var vs = ServicesWorker.GetInstance<VoiceAssistantService>();
 
-            ts.FaceCascadeClassifier = new CascadeClassifier(Application.StartupPath + "/Cascade/haarcascade_frontalface_default.xml");
+            ts.FaceCascadeClassifier =
+                new CascadeClassifier(Application.StartupPath + "/Cascade/haarcascade_frontalface_default.xml");
             ts.recognized += WriteResult;
             //Дальше можно работать как просто с объектом
             while (!exitFlag)
@@ -35,7 +35,7 @@ namespace FaceDetection
                 {
                     case "sample":
                         Console.WriteLine("Введите номер человека и встаньте перед камерой ");
-                        int num = Convert.ToInt32(Console.ReadLine());
+                        var num = Convert.ToInt32(Console.ReadLine());
                         try
                         {
                             ts.AddFaces(num);
@@ -54,7 +54,7 @@ namespace FaceDetection
                     case "check":
                         try
                         {
-                            Thread t = new Thread(new ThreadStart(ts.StartCapture));
+                            var t = new Thread(ts.StartCapture);
                             t.Start();
 
                             if (Console.ReadKey() != null)
@@ -70,8 +70,16 @@ namespace FaceDetection
                         break;
 
                     case "say":
-                        vs.SayText("Hi, man!", "Microsoft Hazel Desktop");
-                        break; ;
+                        var i = 1;
+                        foreach (var voice in vs.GetAllVoices())
+                        {
+                            Console.WriteLine(i + "-" + voice);
+                        }
+                        Console.WriteLine("Выберите голос>>");
+                        var input = Convert.ToInt32(Console.ReadLine());
+                        vs.SayText("Hi, man!", input);
+                        break;
+                        ;
                     case "exit":
                         exitFlag = true;
                         break;
@@ -82,9 +90,7 @@ namespace FaceDetection
                         Console.WriteLine("Неверная команда!");
                         break;
                 }
-
             }
-
         }
 
         public static Dictionary<int, List<Image<Gray, byte>>> GetSampleList()
@@ -92,10 +98,10 @@ namespace FaceDetection
             var fileNames = Directory.GetFiles("Images\\Danil\\", "*.jpg");
             var resultDict = new Dictionary<int, List<Image<Gray, byte>>>();
             var imageList = new List<Image<Gray, byte>>();
-            foreach (string fileName in fileNames)
+            foreach (var fileName in fileNames)
             {
                 var image = new Image<Bgr, byte>(fileName);
-                var resultImage = image.Resize(100, 100, Emgu.CV.CvEnum.Inter.Cubic);
+                var resultImage = image.Resize(100, 100, Inter.Cubic);
                 resultImage._EqualizeHist();
                 var grayImage = resultImage.Convert<Gray, byte>();
                 imageList.Add(grayImage);
@@ -104,10 +110,10 @@ namespace FaceDetection
 
             fileNames = Directory.GetFiles("Images\\Anna\\", "*.jpg");
             imageList = new List<Image<Gray, byte>>();
-            foreach (string fileName in fileNames)
+            foreach (var fileName in fileNames)
             {
                 var image = new Image<Bgr, byte>(fileName);
-                var resultImage = image.Resize(100, 100, Emgu.CV.CvEnum.Inter.Cubic);
+                var resultImage = image.Resize(100, 100, Inter.Cubic);
                 resultImage._EqualizeHist();
 
                 var grayImage = resultImage.Convert<Gray, byte>();
@@ -118,10 +124,9 @@ namespace FaceDetection
             return resultDict;
         }
 
-        static void WriteResult(int label, double distance)
+        private static void WriteResult(int label, double distance)
         {
             Console.WriteLine(label + " " + distance);
         }
-
     }
 }

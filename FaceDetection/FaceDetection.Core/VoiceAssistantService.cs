@@ -3,23 +3,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System;
+using System.Collections.ObjectModel;
 using System.Speech.Synthesis;
 
 namespace FaceDetection.Core
 {
     public class VoiceAssistantService
     {
-        public void SayText(string text,string voice)
+        private readonly SpeechSynthesizer _synthesizer;
+        public VoiceAssistantService()
         {
-            // Initialize a new instance of the SpeechSynthesizer.
-            SpeechSynthesizer synth = new SpeechSynthesizer();
-            synth.SelectVoice(voice);
+            _synthesizer = new SpeechSynthesizer();
+        }
 
-            // Configure the audio output. 
-            synth.SetOutputToDefaultAudioDevice();
+        public void SayText(string text, int voice)
+        {
+            _synthesizer.SelectVoice(_synthesizer.GetInstalledVoices().ToList()[voice].VoiceInfo.Name);
+            _synthesizer.SetOutputToDefaultAudioDevice();
+            _synthesizer.SpeakAsync(text);
+        }
 
-            // Speak a string.
-            synth.SpeakAsync(text);
+
+        public List<string> GetAllVoices()
+        {
+            return _synthesizer.GetInstalledVoices().ToList().Select(installedVoice => installedVoice.VoiceInfo.Name).ToList();
         }
     }
 }

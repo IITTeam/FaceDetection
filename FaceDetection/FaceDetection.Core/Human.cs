@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using Emgu.CV;
 using Emgu.CV.Structure;
 
-namespace FaceDetection
+namespace FaceDetection.Core
 {
     class Human
     {
