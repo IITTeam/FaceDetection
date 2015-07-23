@@ -88,6 +88,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Cascade\haarcascade_frontalface_default.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Images\10.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -23,7 +23,7 @@ namespace FaceDetection
             var ts = ServicesWorker.GetInstance<FaceRecognizerService>();
             var vs = ServicesWorker.GetInstance<VoiceAssistantService>();
 
-
+            ts.FaceCascadeClassifier = new CascadeClassifier(Application.StartupPath + "/Cascade/haarcascade_frontalface_default.xml");
             ts.recognized += WriteResult;
             //Дальше можно работать как просто с объектом
             while (!exitFlag)
@@ -33,15 +33,23 @@ namespace FaceDetection
 
                 switch (inputCommand)
                 {
-                    case "train":
+                    case "sample":
+                        Console.WriteLine("Введите номер человека и встаньте перед камерой ");
+                        int num = Convert.ToInt32(Console.ReadLine());
                         try
                         {
-                            ts.Train(GetSampleList());
+                            ts.AddFaces(num);
                         }
                         catch (Exception ex)
                         {
                             Console.WriteLine(ex.Message);
                         }
+                        break;
+                    case "train":
+                        ts.Train();
+                        break;
+                    case "load":
+                        ts.Load();
                         break;
                     case "check":
                         try
