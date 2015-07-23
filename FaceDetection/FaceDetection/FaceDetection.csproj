@@ -88,6 +88,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Images\10.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Images\Anna\3.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
