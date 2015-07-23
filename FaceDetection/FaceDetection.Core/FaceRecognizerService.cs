@@ -15,7 +15,7 @@ namespace FaceDetection.Core
 
         public FaceRecognizerService()
         {
-            faceRecognizer = new FisherFaceRecognizer();
+            faceRecognizer = new EigenFaceRecognizer(80, double.PositiveInfinity);
         }
 
         public double StartCapture(Image<Gray, float> image)
