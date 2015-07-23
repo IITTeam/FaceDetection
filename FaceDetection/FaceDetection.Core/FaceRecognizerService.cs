@@ -12,31 +12,32 @@ namespace FaceDetection.Core
     public class FaceRecognizerService
     {
         FaceRecognizer faceRecognizer;
+        private bool anyKeyPress = false;
+        public delegate void RecognizeContainer(int label, double distance);
+        public event RecognizeContainer recognized;
 
         public FaceRecognizerService()
         {
-            faceRecognizer = new EigenFaceRecognizer(80, double.PositiveInfinity);
+            faceRecognizer = new FisherFaceRecognizer(0, 3500);
         }
 
-        public double StartCapture(Image<Gray, float> image)
-        {
-            return Recognize(image);
-        }
+        //public double StartCapture(Image<Gray, float> image)
+        //{
+        //    return Recognize(image);
+        //}
 
-        public double StartCapture()
+        public void StartCapture()
         {
             var capture = new Capture();
-            var image = capture.QueryFrame(); //draw the image obtained from camera
-            return Recognize(image.ToImage<Gray, float>());
+            while (!anyKeyPress)
+            {
+                var image = capture.QueryFrame().ToImage<Gray, float>();
+                var result = faceRecognizer.Predict(image);
+                if (recognized != null) recognized(result.Label, result.Distance);
+            }
         }
 
-
-
-        private double Recognize(Image<Gray, float> image)
-        {
-            var result = faceRecognizer.Predict(image);
-            return result.Label;
-        }
+        
 
         public void Train(Dictionary<int, List<Image<Gray, float>>> trainSamples)
         {
@@ -51,6 +52,12 @@ namespace FaceDetection.Core
                 }
             }
             faceRecognizer.Train(images.ToArray(), labels.ToArray());
+        }
+
+
+        public void StopCapture()
+        {
+            this.anyKeyPress = true;
         }
     }
 }

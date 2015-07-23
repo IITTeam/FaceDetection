@@ -6,6 +6,7 @@ using FaceDetection.Core;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using System.Data.SQLite;
+using System.Threading;
 
 namespace FaceDetection
 {
@@ -16,9 +17,14 @@ namespace FaceDetection
             var exitFlag = false;
             ServicesWorker.Registration(new CoreModule());
 
+
+
             //Попросим у контейнера сервис 
             var ts = ServicesWorker.GetInstance<FaceRecognizerService>();
             var vs = ServicesWorker.GetInstance<VoiceAssistantService>();
+
+
+            ts.recognized += WriteResult;
             //Дальше можно работать как просто с объектом
             while (!exitFlag)
             {
@@ -40,18 +46,24 @@ namespace FaceDetection
                     case "check":
                         try
                         {
-                            Console.WriteLine(ts.StartCapture());
+                            Thread t = new Thread(new ThreadStart(ts.StartCapture));
+                            t.Start();
+
+                            if (Console.ReadKey() != null)
+                            {
+                                t.Abort();
+                            }
                         }
                         catch (Exception ex)
                         {
                             Console.WriteLine(ex.Message);
                         }
-                        
+
                         break;
 
                     case "say":
                         vs.SayText("Hi, man!", "Microsoft Hazel Desktop");
-                        break;;
+                        break; ;
                     case "exit":
                         exitFlag = true;
                         break;
@@ -90,5 +102,11 @@ namespace FaceDetection
 
             return resultDict;
         }
+
+        static void WriteResult(int label, double distance)
+        {
+            Console.WriteLine(label + " " + distance);
+        }
+
     }
 }
