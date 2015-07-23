@@ -79,24 +79,31 @@ namespace FaceDetection
 
         }
 
-        public static Dictionary<int, List<Image<Gray, float>>> GetSampleList()
+        public static Dictionary<int, List<Image<Gray, byte>>> GetSampleList()
         {
             var fileNames = Directory.GetFiles("Images\\Danil\\", "*.jpg");
-            var resultDict = new Dictionary<int, List<Image<Gray, float>>>();
-            var imageList = new List<Image<Gray, float>>();
+            var resultDict = new Dictionary<int, List<Image<Gray, byte>>>();
+            var imageList = new List<Image<Gray, byte>>();
             foreach (string fileName in fileNames)
             {
-                var image = new Image<Gray, float>(fileName);
-                imageList.Add(image);
+                var image = new Image<Bgr, byte>(fileName);
+                var resultImage = image.Resize(100, 100, Emgu.CV.CvEnum.Inter.Cubic);
+                resultImage._EqualizeHist();
+                var grayImage = resultImage.Convert<Gray, byte>();
+                imageList.Add(grayImage);
             }
             resultDict.Add(1, imageList);
 
             fileNames = Directory.GetFiles("Images\\Anna\\", "*.jpg");
-            imageList = new List<Image<Gray, float>>();
+            imageList = new List<Image<Gray, byte>>();
             foreach (string fileName in fileNames)
             {
-                var image = new Image<Gray, float>(fileName);
-                imageList.Add(image);
+                var image = new Image<Bgr, byte>(fileName);
+                var resultImage = image.Resize(100, 100, Emgu.CV.CvEnum.Inter.Cubic);
+                resultImage._EqualizeHist();
+
+                var grayImage = resultImage.Convert<Gray, byte>();
+                imageList.Add(grayImage);
             }
             resultDict.Add(2, imageList);
 

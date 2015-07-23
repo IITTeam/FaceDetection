@@ -18,10 +18,10 @@ namespace FaceDetection.Core
 
         public FaceRecognizerService()
         {
-            faceRecognizer = new FisherFaceRecognizer(0, 3500);
+            faceRecognizer = new EigenFaceRecognizer(80, 3000);
         }
 
-        //public double StartCapture(Image<Gray, float> image)
+        //public double StartCapture(Image<Bgr, byte> image)
         //{
         //    return Recognize(image);
         //}
@@ -31,18 +31,30 @@ namespace FaceDetection.Core
             var capture = new Capture();
             while (!anyKeyPress)
             {
-                var image = capture.QueryFrame().ToImage<Gray, float>();
-                var result = faceRecognizer.Predict(image);
-                if (recognized != null) recognized(result.Label, result.Distance);
+                try
+                {
+                    var image = capture.QueryFrame().ToImage<Bgr, byte>();
+
+                    var resultImage = image.Resize(100, 100, Emgu.CV.CvEnum.Inter.Cubic);
+                    resultImage._EqualizeHist();
+                    var grayImage = resultImage.Convert<Gray, byte>();
+
+                    var result = faceRecognizer.Predict(grayImage);
+                    if (recognized != null) recognized(result.Label, result.Distance);
+                }
+                catch (Exception ex)
+                {
+
+                }
             }
         }
 
         
 
-        public void Train(Dictionary<int, List<Image<Gray, float>>> trainSamples)
+        public void Train(Dictionary<int, List<Image<Gray, byte>>> trainSamples)
         {
             var labels = new List<int>();
-            var images = new List<Image<Gray, float>>();
+            var images = new List<Image<Gray, byte>>();
             foreach (var key in trainSamples.Keys)
             {
                 foreach (var image in trainSamples[key])
