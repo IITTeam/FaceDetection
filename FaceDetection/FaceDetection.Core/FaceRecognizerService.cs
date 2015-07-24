@@ -172,8 +172,12 @@ namespace FaceDetection.Core
             {
                 femaleImage._EqualizeHist();
                 var grayImage = femaleImage.Convert<Gray, byte>();
-                allImages.Add(grayImage);
-                idList.Add(0);
+                var detectedFace = DetectFace(grayImage);
+                if (detectedFace != null)
+                {
+                    allImages.Add(detectedFace);
+                    idList.Add(0);
+                }
             }
 
 
@@ -181,8 +185,12 @@ namespace FaceDetection.Core
             {
                 maleImage._EqualizeHist();
                 var grayImage = maleImage.Convert<Gray, byte>();
-                allImages.Add(grayImage);
-                idList.Add(1);
+                var detectedFace = DetectFace(grayImage);
+                if (detectedFace != null)
+                {
+                    allImages.Add(detectedFace);
+                    idList.Add(1);
+                }
             }
 
             genderFaceRecognizer.Train(allImages.ToArray(), idList.ToArray());
