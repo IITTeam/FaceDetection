@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+using System.Threading;
 using Emgu.CV;
 using Emgu.Util;
 using Emgu.CV.Face;
@@ -65,7 +66,14 @@ namespace FaceDetection.Core
                             if (result.Label != -1)
                             {
                                 var human = humanService.People.Find(x => x.Id == result.Label);
-                                if (recognized != null) recognized(human.Name, result.Distance);
+                                if (human != null)
+                                {
+                                    if (recognized != null) recognized(human.Name, result.Distance);
+                                }
+                                else
+                                {
+                                    if (recognized != null) recognized(result.Label.ToString(), result.Distance);
+                                }
                             }
                         }
                         var gender = genderFaceRecognizer.Predict(detectedFace);
@@ -76,7 +84,7 @@ namespace FaceDetection.Core
                     }
 
                 }
-                catch (Exception ex)
+                catch (ThreadAbortException ex)
                 {
                     capture.Dispose();
                 }
@@ -131,6 +139,7 @@ namespace FaceDetection.Core
         {
             faceRecognizer.Load("facerecognizer");
             genderFaceRecognizer.Load("genderfacerecognizer");
+            faceRecognizerTrained = true;
         }
 
 
