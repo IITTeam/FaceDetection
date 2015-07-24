@@ -20,7 +20,6 @@ namespace FaceDetection
 
             //Попросим у контейнера сервис 
             var ts = ServicesWorker.GetInstance<FaceRecognizerService>();
-            var vs = ServicesWorker.GetInstance<VoiceAssistantService>();
 
             ts.FaceCascadeClassifier =
                 new CascadeClassifier(Application.StartupPath + "/Cascade/haarcascade_frontalface_default.xml");
@@ -74,17 +73,17 @@ namespace FaceDetection
 
                         break;
 
-                    case "say":
-                        var i = 1;
-                        foreach (var voice in vs.GetAllVoices())
-                        {
-                            Console.WriteLine(i + "-" + voice);
-                        }
-                        Console.WriteLine("Выберите голос>>");
-                        var input = Convert.ToInt32(Console.ReadLine());
-                        vs.SayText("Hi, man!", input);
-                        break;
-                        ;
+                    //case "say":
+                    //    var i = 1;
+                    //    foreach (var voice in vs.GetAllVoices())
+                    //    {
+                    //        Console.WriteLine(i + "-" + voice);
+                    //    }
+                    //    Console.WriteLine("Выберите голос>>");
+                    //    var input = Convert.ToInt32(Console.ReadLine());
+                    //    vs.SayText("Hi, man!", input);
+                    //    break;
+                    //    ;
                     case "exit":
                         exitFlag = true;
                         break;
@@ -103,20 +102,52 @@ namespace FaceDetection
             Console.WriteLine("F: " + f + ", M: " + m);
         }
 
+        public static string currentName = "";
+        static int counter = 0;
+
         private static void WriteResult(string name, double distance)
         {
+            VoiceAssistantService vs = ServicesWorker.GetInstance<VoiceAssistantService>();
+            if (name == currentName)
+                counter++;
+            else
+            {
+                counter = 0;
+                currentName = name;
+            }
             Console.WriteLine(name + " " + distance);
+            if (counter == 5)
+            {
+                vs.SayText("Hello " + name, 0);
+            }
         }
 
         private static void WriteResult(bool gender, double distance)
         {
+            string text = "";
+            if (gender)
+                text = "boy";
+            else
+                text = "girl";
+            VoiceAssistantService vs = ServicesWorker.GetInstance<VoiceAssistantService>();
+            if (text == currentName)
+                counter++;
+            else
+            {
+                counter = 0;
+                currentName = text;
+            }
             string g = gender ? "М" : "Ж";
-            Console.WriteLine( g + " " + distance);
+            Console.WriteLine(g + " " + distance);
+            if (counter == 5)
+            {
+                vs.SayText("Hello " + text, 0);
+            }
         }
 
         private static List<Image<Bgr, byte>> GetSamples(string pathName)
         {
-            var fileNames = Directory.GetFiles("Images\\"+pathName+"\\", "*.jpg");
+            var fileNames = Directory.GetFiles("Images\\" + pathName + "\\", "*.jpg");
             var imageList = new List<Image<Bgr, byte>>();
             foreach (var fileName in fileNames)
             {

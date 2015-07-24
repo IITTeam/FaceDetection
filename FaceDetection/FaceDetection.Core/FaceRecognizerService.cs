@@ -60,26 +60,26 @@ namespace FaceDetection.Core
                     var detectedFace = DetectFace(grayImage);
                     if (detectedFace != null)
                     {
-                        if (faceRecognizerTrained)
+                        var result = faceRecognizer.Predict(detectedFace);
+                        if (result.Label != -1)
                         {
-                            var result = faceRecognizer.Predict(detectedFace);
-                            if (result.Label != -1)
+                            var human = humanService.People.Find(x => x.Id == result.Label);
+                            if (human != null)
                             {
-                                var human = humanService.People.Find(x => x.Id == result.Label);
-                                if (human != null)
-                                {
-                                    if (recognized != null) recognized(human.Name, result.Distance);
-                                }
-                                else
-                                {
-                                    if (recognized != null) recognized(result.Label.ToString(), result.Distance);
-                                }
+                                if (recognized != null) recognized(human.Name, result.Distance);
+                            }
+                            else
+                            {
+                                if (recognized != null) recognized(result.Label.ToString(), result.Distance);
                             }
                         }
-                        var gender = genderFaceRecognizer.Predict(detectedFace);
-                        if (gender.Label != -1)
+                        else
                         {
-                            if (genderRecognized != null) genderRecognized(gender.Label != 0, gender.Distance);
+                            var gender = genderFaceRecognizer.Predict(detectedFace);
+                            if (gender.Label != -1)
+                            {
+                                if (genderRecognized != null) genderRecognized(gender.Label != 0, gender.Distance);
+                            }
                         }
                     }
 
