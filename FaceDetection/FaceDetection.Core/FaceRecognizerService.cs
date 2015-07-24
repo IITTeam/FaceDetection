@@ -64,7 +64,7 @@ namespace FaceDetection.Core
                             var gender = genderFaceRecognizer.Predict(detectedFace);
                             if (gender.Label != -1)
                             {
-                                genderRecognized?.Invoke(gender.Label != 0, gender.Distance);
+                                if (genderRecognized != null) genderRecognized(gender.Label != 0, gender.Distance);
                             }
                         }
                     }
