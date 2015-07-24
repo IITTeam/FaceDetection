@@ -25,6 +25,7 @@ namespace FaceDetection
             ts.FaceCascadeClassifier =
                 new CascadeClassifier(Application.StartupPath + "/Cascade/haarcascade_frontalface_default.xml");
             ts.recognized += WriteResult;
+            ts.genderRecognized += WriteResult;
             //Дальше можно работать как просто с объектом
             while (!exitFlag)
             {
@@ -48,6 +49,9 @@ namespace FaceDetection
                     case "train":
                         ts.Train();
                         break;
+                    //case "traingender":
+                    //    ts.TrainGender();
+                    //    break;
                     case "load":
                         ts.Load();
                         break;
@@ -93,41 +97,14 @@ namespace FaceDetection
             }
         }
 
-        public static Dictionary<int, List<Image<Gray, byte>>> GetSampleList()
+        private static void WriteResult(string name, double distance)
         {
-            var fileNames = Directory.GetFiles("Images\\Danil\\", "*.jpg");
-            var resultDict = new Dictionary<int, List<Image<Gray, byte>>>();
-            var imageList = new List<Image<Gray, byte>>();
-            foreach (var fileName in fileNames)
-            {
-                var image = new Image<Bgr, byte>(fileName);
-                var resultImage = image.Resize(100, 100, Inter.Cubic);
-                resultImage._EqualizeHist();
-                var grayImage = resultImage.Convert<Gray, byte>();
-                imageList.Add(grayImage);
-            }
-            resultDict.Add(1, imageList);
-
-            fileNames = Directory.GetFiles("Images\\Anna\\", "*.jpg");
-            imageList = new List<Image<Gray, byte>>();
-            foreach (var fileName in fileNames)
-            {
-                var image = new Image<Bgr, byte>(fileName);
-                var resultImage = image.Resize(100, 100, Inter.Cubic);
-                resultImage._EqualizeHist();
-
-                var grayImage = resultImage.Convert<Gray, byte>();
-                imageList.Add(grayImage);
-            }
-            resultDict.Add(2, imageList);
-
-            return resultDict;
+            Console.WriteLine(name + " " + distance);
         }
 
-        private static void WriteResult(Human human, double distance)
+        private static void WriteResult(bool gender, double distance)
         {
-            
-            Console.WriteLine(human.Name + " " + distance);
+            Console.WriteLine(gender?"М":"Ж" + " " + distance);
         }
     }
 }

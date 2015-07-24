@@ -14,9 +14,12 @@ namespace FaceDetection.Core
     public class FaceRecognizerService
     {
         FaceRecognizer faceRecognizer;
+        FaceRecognizer genderFaceRecognizer;
         private bool anyKeyPress = false;
-        public delegate void RecognizeContainer(Human human, double distance);
+        public delegate void RecognizeContainer(string name, double distance);
         public event RecognizeContainer recognized;
+        public delegate void GenderRecognizeContainer(bool gender, double distance);
+        public event GenderRecognizeContainer genderRecognized;
         public HumanService humanService;
 
         public CascadeClassifier FaceCascadeClassifier { get; set; }
@@ -24,6 +27,7 @@ namespace FaceDetection.Core
         public FaceRecognizerService()
         {
             faceRecognizer = new LBPHFaceRecognizer(1, 8, 8, 8, 100);
+            genderFaceRecognizer = new LBPHFaceRecognizer(1, 8, 8, 8, 100);
             humanService = new HumanService();
             //labels = new List<int>();
             //images = new List<Image<Gray, byte>>();
@@ -50,10 +54,21 @@ namespace FaceDetection.Core
                     if (detectedFace != null)
                     {
                         var result = faceRecognizer.Predict(detectedFace);
-                        var human = humanService.People.Find(x => x.Id == result.Label);
-                        if (recognized != null) recognized(human, result.Distance);
+                        if (result.Label != -1)
+                        {
+                            var human = humanService.People.Find(x => x.Id == result.Label);
+                            if (recognized != null) recognized(human.Name, result.Distance);
+                        }
+                        else
+                        {
+                            var gender = genderFaceRecognizer.Predict(detectedFace);
+                            if (gender.Label != -1)
+                            {
+                                genderRecognized?.Invoke(gender.Label != 0, gender.Distance);
+                            }
+                        }
                     }
-                    
+
                 }
                 catch (Exception ex)
                 {
@@ -68,7 +83,7 @@ namespace FaceDetection.Core
 
         public void AddFaces(string label)
         {
-            List<Image<Gray, byte>> images = new List<Image<Gray,byte>>();
+            List<Image<Gray, byte>> images = new List<Image<Gray, byte>>();
             int count = 0;
             var capture = new Capture();
             while (count < 5)
@@ -92,12 +107,12 @@ namespace FaceDetection.Core
 
         public void Train()
         {
-            List<Image<Gray, byte>> allImages = new List<Image<Gray,byte>>();
+            List<Image<Gray, byte>> allImages = new List<Image<Gray, byte>>();
             List<int> idList = new List<int>();
             foreach (var human in humanService.People)
             {
                 allImages.AddRange(human.Images);
-                for (int i = 0; i< human.Images.Count; i++)
+                for (int i = 0; i < human.Images.Count; i++)
                     idList.Add(human.Id);
             }
 
@@ -108,13 +123,9 @@ namespace FaceDetection.Core
         public void Load()
         {
             faceRecognizer.Load("facerecognizer");
+            genderFaceRecognizer.Load("genderfacerecognizer");
         }
 
-
-        public void StopCapture()
-        {
-            this.anyKeyPress = true;
-        }
 
         private Image<Gray, byte> DetectFace(Image<Gray, byte> srcImage)
         {
@@ -145,6 +156,37 @@ namespace FaceDetection.Core
                 return result;
             }
             return null;
+        }
+
+        /// <summary>
+        /// Обучение на распознавание пола человека
+        /// </summary>
+        /// <param name="maleImages"></param>
+        /// <param name="femaleImages"></param>
+        public void TrainGender(List<Image<Bgr, byte>> maleImages, List<Image<Bgr, byte>> femaleImages)
+        {
+            var allImages = new List<Image<Gray, byte>>();
+            var idList = new List<int>();
+
+            foreach (var femaleImage in femaleImages)
+            {
+                femaleImage._EqualizeHist();
+                var grayImage = femaleImage.Convert<Gray, byte>();
+                allImages.Add(grayImage);
+                idList.Add(0);
+            }
+
+
+            foreach (var maleImage in maleImages)
+            {
+                maleImage._EqualizeHist();
+                var grayImage = maleImage.Convert<Gray, byte>();
+                allImages.Add(grayImage);
+                idList.Add(1);
+            }
+
+            genderFaceRecognizer.Train(allImages.ToArray(), idList.ToArray());
+            genderFaceRecognizer.Save("genderfacerecognizer");
         }
     }
 }
