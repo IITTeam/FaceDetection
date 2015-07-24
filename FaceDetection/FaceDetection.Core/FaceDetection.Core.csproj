@@ -64,7 +64,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoreModule.cs" />
-    <Compile Include="DatabaseService.cs" />
     <Compile Include="FaceRecognizerService.cs" />
     <Compile Include="Human.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -22,7 +22,7 @@ namespace FaceDetection.Core
 
         public FaceRecognizerService()
         {
-            faceRecognizer = new EigenFaceRecognizer(80, 3000);
+            faceRecognizer = new LBPHFaceRecognizer(1, 8, 8, 8, 100);
             labels = new List<int>();
             images = new List<Image<Gray, byte>>();
         }
