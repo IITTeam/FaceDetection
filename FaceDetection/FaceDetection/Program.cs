@@ -49,9 +49,9 @@ namespace FaceDetection
                     case "train":
                         ts.Train();
                         break;
-                    //case "traingender":
-                    //    ts.TrainGender();
-                    //    break;
+                    case "traingender":
+                        ts.TrainGender(GetSamples("Male"), GetSamples("Female"));
+                        break;
                     case "load":
                         ts.Load();
                         break;
@@ -105,6 +105,18 @@ namespace FaceDetection
         private static void WriteResult(bool gender, double distance)
         {
             Console.WriteLine(gender?"М":"Ж" + " " + distance);
+        }
+
+        private static List<Image<Bgr, byte>> GetSamples(string pathName)
+        {
+            var fileNames = Directory.GetFiles("Images\\"+pathName+"\\", "*.jpg");
+            var imageList = new List<Image<Bgr, byte>>();
+            foreach (var fileName in fileNames)
+            {
+                var image = new Image<Bgr, byte>(fileName);
+                imageList.Add(image);
+            }
+            return imageList;
         }
     }
 }
