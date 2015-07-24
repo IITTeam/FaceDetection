@@ -208,6 +208,7 @@ namespace FaceDetection.Core
 
             genderFaceRecognizer.Train(allImages.ToArray(), idList.ToArray());
             genderFaceRecognizer.Save("genderfacerecognizer");
+            onCount(fCount, mCount);
         }
     }
 }
