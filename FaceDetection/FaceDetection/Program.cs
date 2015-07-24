@@ -26,6 +26,7 @@ namespace FaceDetection
                 new CascadeClassifier(Application.StartupPath + "/Cascade/haarcascade_frontalface_default.xml");
             ts.recognized += WriteResult;
             ts.genderRecognized += WriteResult;
+            ts.onCount += WriteCount;
             //Дальше можно работать как просто с объектом
             while (!exitFlag)
             {
@@ -97,6 +98,11 @@ namespace FaceDetection
             }
         }
 
+        private static void WriteCount(int f, int m)
+        {
+            Console.WriteLine("F: " + f + ", M: " + m);
+        }
+
         private static void WriteResult(string name, double distance)
         {
             Console.WriteLine(name + " " + distance);
@@ -104,7 +110,8 @@ namespace FaceDetection
 
         private static void WriteResult(bool gender, double distance)
         {
-            Console.WriteLine(gender?"М":"Ж" + " " + distance);
+            string g = gender ? "М" : "Ж";
+            Console.WriteLine( g + " " + distance);
         }
 
         private static List<Image<Bgr, byte>> GetSamples(string pathName)

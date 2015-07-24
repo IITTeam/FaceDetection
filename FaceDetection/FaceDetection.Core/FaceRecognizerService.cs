@@ -22,7 +22,13 @@ namespace FaceDetection.Core
         public event GenderRecognizeContainer genderRecognized;
         public HumanService humanService;
 
+
+        public delegate void CounterContainer(int f, int m);
+        public event CounterContainer onCount;
+
         public CascadeClassifier FaceCascadeClassifier { get; set; }
+
+        private bool faceRecognizerTrained = false;
 
         public FaceRecognizerService()
         {
@@ -41,7 +47,7 @@ namespace FaceDetection.Core
         public void StartCapture()
         {
             var capture = new Capture();
-            while (!anyKeyPress)
+            while (true)
             {
                 try
                 {
@@ -53,26 +59,26 @@ namespace FaceDetection.Core
                     var detectedFace = DetectFace(grayImage);
                     if (detectedFace != null)
                     {
-                        var result = faceRecognizer.Predict(detectedFace);
-                        if (result.Label != -1)
+                        if (faceRecognizerTrained)
                         {
-                            var human = humanService.People.Find(x => x.Id == result.Label);
-                            if (recognized != null) recognized(human.Name, result.Distance);
-                        }
-                        else
-                        {
-                            var gender = genderFaceRecognizer.Predict(detectedFace);
-                            if (gender.Label != -1)
+                            var result = faceRecognizer.Predict(detectedFace);
+                            if (result.Label != -1)
                             {
-                                if (genderRecognized != null) genderRecognized(gender.Label != 0, gender.Distance);
+                                var human = humanService.People.Find(x => x.Id == result.Label);
+                                if (recognized != null) recognized(human.Name, result.Distance);
                             }
+                        }
+                        var gender = genderFaceRecognizer.Predict(detectedFace);
+                        if (gender.Label != -1)
+                        {
+                            if (genderRecognized != null) genderRecognized(gender.Label != 0, gender.Distance);
                         }
                     }
 
                 }
                 catch (Exception ex)
                 {
-
+                    capture.Dispose();
                 }
             }
         }
@@ -117,6 +123,7 @@ namespace FaceDetection.Core
             }
 
             faceRecognizer.Train(allImages.ToArray(), idList.ToArray());
+            faceRecognizerTrained = true;
             faceRecognizer.Save("facerecognizer");
         }
 
@@ -168,6 +175,10 @@ namespace FaceDetection.Core
             var allImages = new List<Image<Gray, byte>>();
             var idList = new List<int>();
 
+            var fCount = 0;
+            var mCount = 0;
+
+
             foreach (var femaleImage in femaleImages)
             {
                 femaleImage._EqualizeHist();
@@ -177,6 +188,7 @@ namespace FaceDetection.Core
                 {
                     allImages.Add(detectedFace);
                     idList.Add(0);
+                    fCount++;
                 }
             }
 
@@ -190,6 +202,7 @@ namespace FaceDetection.Core
                 {
                     allImages.Add(detectedFace);
                     idList.Add(1);
+                    mCount++;
                 }
             }
 
