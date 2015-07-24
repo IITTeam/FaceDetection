@@ -66,6 +66,7 @@
     <Compile Include="CoreModule.cs" />
     <Compile Include="FaceRecognizerService.cs" />
     <Compile Include="Human.cs" />
+    <Compile Include="HumanService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceContainer.cs" />
     <Compile Include="ServiceModule.cs" />

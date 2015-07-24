@@ -34,11 +34,11 @@ namespace FaceDetection
                 switch (inputCommand)
                 {
                     case "sample":
-                        Console.WriteLine("Введите номер человека и встаньте перед камерой ");
-                        var num = Convert.ToInt32(Console.ReadLine());
+                        Console.WriteLine("Введите имя человека и встаньте перед камерой ");
+                        var name = Console.ReadLine();
                         try
                         {
-                            ts.AddFaces(num);
+                            ts.AddFaces(name);
                         }
                         catch (Exception ex)
                         {
@@ -124,9 +124,10 @@ namespace FaceDetection
             return resultDict;
         }
 
-        private static void WriteResult(int label, double distance)
+        private static void WriteResult(Human human, double distance)
         {
-            Console.WriteLine(label + " " + distance);
+            
+            Console.WriteLine(human.Name + " " + distance);
         }
     }
 }

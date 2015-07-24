@@ -7,16 +7,16 @@ using Emgu.CV.Structure;
 
 namespace FaceDetection.Core
 {
-    class HumanCreatorService
+    public class HumanService
     {
-        List<Human> People {get; set; }
+        public List<Human> People {get; set; }
 
-        public HumanCreatorService()
+        public HumanService()
         {
             People = new List<Human>();
         }
 
-        public void AddHuman(string label, List<Image<Bgr, byte>> images)
+        public void AddHuman(string label, List<Image<Gray, byte>> images)
         {
             People.Add(new Human(People.Count, label, images));
         }

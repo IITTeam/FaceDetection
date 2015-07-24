@@ -15,16 +15,18 @@ namespace FaceDetection.Core
     {
         FaceRecognizer faceRecognizer;
         private bool anyKeyPress = false;
-        public delegate void RecognizeContainer(int label, double distance);
+        public delegate void RecognizeContainer(Human human, double distance);
         public event RecognizeContainer recognized;
+        public HumanService humanService;
 
         public CascadeClassifier FaceCascadeClassifier { get; set; }
 
         public FaceRecognizerService()
         {
             faceRecognizer = new LBPHFaceRecognizer(1, 8, 8, 8, 100);
-            labels = new List<int>();
-            images = new List<Image<Gray, byte>>();
+            humanService = new HumanService();
+            //labels = new List<int>();
+            //images = new List<Image<Gray, byte>>();
         }
 
         //public double StartCapture(Image<Bgr, byte> image)
@@ -48,7 +50,8 @@ namespace FaceDetection.Core
                     if (detectedFace != null)
                     {
                         var result = faceRecognizer.Predict(detectedFace);
-                        if (recognized != null) recognized(result.Label, result.Distance);
+                        var human = humanService.People.Find(x => x.Id == result.Label);
+                        if (recognized != null) recognized(human, result.Distance);
                     }
                     
                 }
@@ -60,11 +63,12 @@ namespace FaceDetection.Core
         }
 
 
-        List<int> labels;
-        List<Image<Gray, byte>> images;
+        //List<int> labels;
+        //List<Image<Gray, byte>> images;
 
-        public void AddFaces(int label)
+        public void AddFaces(string label)
         {
+            List<Image<Gray, byte>> images = new List<Image<Gray,byte>>();
             int count = 0;
             var capture = new Capture();
             while (count < 5)
@@ -77,17 +81,27 @@ namespace FaceDetection.Core
                 if (detectedFace != null)
                 {
                     images.Add(detectedFace);
-                    labels.Add(label);
+                    //labels.Add(label);
                     count++;
                 }
 
             }
+            humanService.AddHuman(label, images);
             capture.Dispose();
         }
 
         public void Train()
         {
-            faceRecognizer.Train(images.ToArray(), labels.ToArray());
+            List<Image<Gray, byte>> allImages = new List<Image<Gray,byte>>();
+            List<int> idList = new List<int>();
+            foreach (var human in humanService.People)
+            {
+                allImages.AddRange(human.Images);
+                for (int i = 0; i< human.Images.Count; i++)
+                    idList.Add(human.Id);
+            }
+
+            faceRecognizer.Train(allImages.ToArray(), idList.ToArray());
             faceRecognizer.Save("facerecognizer");
         }
 
