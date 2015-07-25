@@ -61,27 +61,28 @@ namespace FaceDetection.Core
                     var detectedFace = DetectFace(grayImage);
                     if (detectedFace != null)
                     {
-                        //var result = faceRecognizer.Predict(detectedFace);
-                        //if (result.Label != -1)
-                        //{
-                        //    var human = humanService.People.Find(x => x.Id == result.Label);
-                        //    if (human != null)
-                        //    {
-                        //        if (recognized != null) recognized(human.Name, result.Distance);
-                        //    }
-                        //    else
-                        //    {
-                        //        if (recognized != null) recognized(result.Label.ToString(), result.Distance);
-                        //    }
-                        //}
-                        //else
-                        //{
-                            var gender = genderFaceRecognizer.Predict(detectedFace);
-                            if (gender.Label != -1)
+                        if (faceRecognizerTrained)
+                        {
+                            var result = faceRecognizer.Predict(detectedFace);
+                            if (result.Label != -1)
                             {
-                                if (genderRecognized != null) genderRecognized(gender.Label != 0, gender.Distance);
+                                var human = humanService.People.Find(x => x.Id == result.Label);
+                                if (human != null)
+                                {
+                                    if (recognized != null) recognized(human.Name, result.Distance);
+                                }
+                                else
+                                {
+                                    if (recognized != null) recognized(result.Label.ToString(), result.Distance);
+                                }
+                                continue;
                             }
-                        //}
+                        }
+                        var gender = genderFaceRecognizer.Predict(detectedFace);
+                        if (gender.Label != -1)
+                        {
+                            if (genderRecognized != null) genderRecognized(gender.Label != 0, gender.Distance);
+                        }
                     }
 
                 }
@@ -139,11 +140,12 @@ namespace FaceDetection.Core
         public void Load()
         {
             if (File.Exists("facerecognizer"))
+            {
                 faceRecognizer.Load("facerecognizer");
+                faceRecognizerTrained = true;
+            }
             if (File.Exists("genderfacerecognizer"))
                 genderFaceRecognizer.Load("genderfacerecognizer");
-            faceRecognizerTrained = true;
-
         }
 
 
