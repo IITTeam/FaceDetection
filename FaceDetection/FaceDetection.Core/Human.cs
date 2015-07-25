@@ -10,12 +10,11 @@ namespace FaceDetection.Core
         public string Name { get; private set; }
         public List<Image<Gray, byte>> Images { get; private set; }
         public bool Gender { get; private set; }
-
         public Human(int id, string name, List<Image<Gray, byte>> images)
         {
-            this.Id = id;
-            this.Name = name;
-            this.Images = new List<Image<Gray, byte>>(images);
+            Id = id;
+            Name = name;
+            Images = new List<Image<Gray, byte>>(images);
         }
     }
 }

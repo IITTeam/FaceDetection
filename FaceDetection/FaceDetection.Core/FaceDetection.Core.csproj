@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Emgu.CV">
@@ -40,17 +42,14 @@
     <Reference Include="Emgu.CV.Cuda">
       <HintPath>..\..\..\..\Emgu\libemgucv-windows-universal-3.0.0.2157\bin\Emgu.CV.Cuda.dll</HintPath>
     </Reference>
+    <Reference Include="Emgu.CV.ML">
+      <HintPath>..\..\..\..\..\..\..\Emgu\emgucv-windows-universal 3.0.0.2157\bin\Emgu.CV.ML.dll</HintPath>
+    </Reference>
     <Reference Include="Emgu.Util">
       <HintPath>..\..\..\..\Emgu\libemgucv-windows-universal-3.0.0.2157\bin\Emgu.Util.dll</HintPath>
     </Reference>
-    <Reference Include="MongoDB.Bson">
-      <HintPath>..\Libs\mongo\MongoDB.Bson.dll</HintPath>
-    </Reference>
-    <Reference Include="MongoDB.Driver">
-      <HintPath>..\Libs\mongo\MongoDB.Driver.dll</HintPath>
-    </Reference>
-    <Reference Include="MongoDB.Driver.Core">
-      <HintPath>..\Libs\mongo\MongoDB.Driver.Core.dll</HintPath>
+    <Reference Include="NDatabase3">
+      <HintPath>..\Libs\NDatabase.3.8-v3.5\NDatabase3.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -64,6 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoreModule.cs" />
+    <Compile Include="DatabaseService.cs" />
     <Compile Include="FaceRecognizerService.cs" />
     <Compile Include="Human.cs" />
     <Compile Include="HumanService.cs" />

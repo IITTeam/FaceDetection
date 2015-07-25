@@ -9,7 +9,7 @@ namespace FaceDetection.Core
 {
     public class HumanService
     {
-        public List<Human> People {get; set; }
+        public List<Human> People { get; set; }
 
         public HumanService()
         {
@@ -24,6 +24,11 @@ namespace FaceDetection.Core
         public void AddHuman(Human human)
         {
             People.Add(human);
+        }
+
+        public Human GetHumanFromId(int id)
+        {
+            return ServicesWorker.GetInstance<DatabaseService>().Query<Human>(new Dictionary<string, object> { { "Id", id } });
         }
     }
 }

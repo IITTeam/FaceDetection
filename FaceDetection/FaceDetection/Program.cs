@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using Emgu.CV;
-using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using FaceDetection.Core;
 
@@ -12,21 +12,23 @@ namespace FaceDetection
 {
     internal class Program
     {
+        public static string CurrentName = "";
+        private static int _counter;
+
         private static void Main(string[] args)
         {
             var exitFlag = false;
             ServicesWorker.Registration(new CoreModule());
 
-
-            //Попросим у контейнера сервис 
             var ts = ServicesWorker.GetInstance<FaceRecognizerService>();
+            var dbs = ServicesWorker.GetInstance<DatabaseService>();
 
             ts.FaceCascadeClassifier =
                 new CascadeClassifier(Application.StartupPath + "/Cascade/haarcascade_frontalface_default.xml");
-            ts.recognized += WriteResult;
-            ts.genderRecognized += WriteResult;
-            ts.onCount += WriteCount;
-            //Дальше можно работать как просто с объектом
+            ts.Recognized += WriteResult;
+            ts.GenderRecognized += WriteResult;
+            ts.OnCount += WriteCount;
+
             while (!exitFlag)
             {
                 Console.Write(">> ");
@@ -54,6 +56,14 @@ namespace FaceDetection
                         break;
                     case "load":
                         ts.Load();
+                        break;
+                    case "db":
+                        //dbs.QueryByClassName<Human>();
+                        //var d = new Dictionary<string, object>();
+                        //d.Add("Id", 111);
+                        //dbs.Query<Human>(d);
+                        ////dbs.Insert(new Human(111,"test",new List<Image<Gray, byte>>()));
+                        ////dbs.QueryByClassName<Human>();
                         break;
                     case "check":
                         try
@@ -102,21 +112,18 @@ namespace FaceDetection
             Console.WriteLine("F: " + f + ", M: " + m);
         }
 
-        public static string currentName = "";
-        static int counter = 0;
-
         private static void WriteResult(string name, double distance)
         {
-            VoiceAssistantService vs = ServicesWorker.GetInstance<VoiceAssistantService>();
-            if (name == currentName)
-                counter++;
+            var vs = ServicesWorker.GetInstance<VoiceAssistantService>();
+            if (name == CurrentName)
+                _counter++;
             else
             {
-                counter = 0;
-                currentName = name;
+                _counter = 0;
+                CurrentName = name;
             }
             Console.WriteLine(name + " " + distance);
-            if (counter == 5)
+            if (_counter == 5)
             {
                 vs.SayText("Hello " + name, 0);
             }
@@ -124,22 +131,19 @@ namespace FaceDetection
 
         private static void WriteResult(bool gender, double distance)
         {
-            string text = "";
-            if (gender)
-                text = "boy";
-            else
-                text = "girl";
-            VoiceAssistantService vs = ServicesWorker.GetInstance<VoiceAssistantService>();
-            if (text == currentName)
-                counter++;
+            var text = "";
+            text = gender ? "boy" : "girl";
+            var vs = ServicesWorker.GetInstance<VoiceAssistantService>();
+            if (text == CurrentName)
+                _counter++;
             else
             {
-                counter = 0;
-                currentName = text;
+                _counter = 0;
+                CurrentName = text;
             }
-            string g = gender ? "М" : "Ж";
+            var g = gender ? "М" : "Ж";
             Console.WriteLine(g + " " + distance);
-            if (counter == 5)
+            if (_counter == 5)
             {
                 vs.SayText("Hello " + text, 0);
             }
@@ -148,13 +152,7 @@ namespace FaceDetection
         private static List<Image<Bgr, byte>> GetSamples(string pathName)
         {
             var fileNames = Directory.GetFiles("Images\\" + pathName + "\\", "*.jpg");
-            var imageList = new List<Image<Bgr, byte>>();
-            foreach (var fileName in fileNames)
-            {
-                var image = new Image<Bgr, byte>(fileName);
-                imageList.Add(image);
-            }
-            return imageList;
+            return fileNames.Select(fileName => new Image<Bgr, byte>(fileName)).ToList();
         }
     }
 }

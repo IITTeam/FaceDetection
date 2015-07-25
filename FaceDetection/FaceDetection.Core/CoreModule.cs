@@ -15,6 +15,7 @@ namespace FaceDetection.Core
             //Здесь нужно регистрировать сервисы (например: сервис распознования)
             container.RegisterService(() => new FaceRecognizerService());
             container.RegisterService(()=>new VoiceAssistantService());
+            container.RegisterService(() => new DatabaseService());
         }
     }
 }

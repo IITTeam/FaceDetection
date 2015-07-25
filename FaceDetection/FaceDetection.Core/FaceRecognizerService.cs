@@ -1,46 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Threading;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using Emgu.CV;
-using Emgu.Util;
+using Emgu.CV.CvEnum;
 using Emgu.CV.Face;
-using Emgu.CV.Features2D;
 using Emgu.CV.Structure;
 
 namespace FaceDetection.Core
 {
     public class FaceRecognizerService
     {
-        FaceRecognizer faceRecognizer;
-        FaceRecognizer genderFaceRecognizer;
-        private bool anyKeyPress = false;
-        public delegate void RecognizeContainer(string name, double distance);
-        public event RecognizeContainer recognized;
-        public delegate void GenderRecognizeContainer(bool gender, double distance);
-        public event GenderRecognizeContainer genderRecognized;
-        public HumanService humanService;
-
-
         public delegate void CounterContainer(int f, int m);
-        public event CounterContainer onCount;
 
-        public CascadeClassifier FaceCascadeClassifier { get; set; }
+        public delegate void GenderRecognizeContainer(bool gender, double distance);
 
-        private bool faceRecognizerTrained = false;
+        public delegate void RecognizeContainer(string name, double distance);
+
+        private bool _anyKeyPress = false;
+        private bool _faceRecognizerTrained;
+        public HumanService HumanService;
+        private readonly FaceRecognizer _genderFaceRecognizer;
+        private readonly FaceRecognizer _faceRecognizer;
 
         public FaceRecognizerService()
         {
-            faceRecognizer = new LBPHFaceRecognizer(1, 8, 8, 8, 100);
-            genderFaceRecognizer = new LBPHFaceRecognizer(1, 8, 8, 8, 100);
-            humanService = new HumanService();
+            _faceRecognizer = new LBPHFaceRecognizer(1, 8, 8, 8, 100);
+            _genderFaceRecognizer = new LBPHFaceRecognizer(1, 8, 8, 8, 100);
+            HumanService = new HumanService();
             //labels = new List<int>();
             //images = new List<Image<Gray, byte>>();
         }
 
+        public CascadeClassifier FaceCascadeClassifier { get; set; }
+        public event RecognizeContainer Recognized;
+        public event GenderRecognizeContainer GenderRecognized;
+        public event CounterContainer OnCount;
         //public double StartCapture(Image<Bgr, byte> image)
         //{
         //    return Recognize(image);
@@ -61,30 +57,29 @@ namespace FaceDetection.Core
                     var detectedFace = DetectFace(grayImage);
                     if (detectedFace != null)
                     {
-                        if (faceRecognizerTrained)
+                        if (_faceRecognizerTrained)
                         {
-                            var result = faceRecognizer.Predict(detectedFace);
+                            var result = _faceRecognizer.Predict(detectedFace);
                             if (result.Label != -1)
                             {
-                                var human = humanService.People.Find(x => x.Id == result.Label);
+                                var human = HumanService.People.Find(x => x.Id == result.Label);
                                 if (human != null)
                                 {
-                                    if (recognized != null) recognized(human.Name, result.Distance);
+                                    if (Recognized != null) Recognized(human.Name, result.Distance);
                                 }
                                 else
                                 {
-                                    if (recognized != null) recognized(result.Label.ToString(), result.Distance);
+                                    if (Recognized != null) Recognized(result.Label.ToString(), result.Distance);
                                 }
                                 continue;
                             }
                         }
-                        var gender = genderFaceRecognizer.Predict(detectedFace);
+                        var gender = _genderFaceRecognizer.Predict(detectedFace);
                         if (gender.Label != -1)
                         {
-                            if (genderRecognized != null) genderRecognized(gender.Label != 0, gender.Distance);
+                            if (GenderRecognized != null) GenderRecognized(gender.Label != 0, gender.Distance);
                         }
                     }
-
                 }
                 catch (ThreadAbortException ex)
                 {
@@ -93,14 +88,13 @@ namespace FaceDetection.Core
             }
         }
 
-
         //List<int> labels;
         //List<Image<Gray, byte>> images;
 
         public void AddFaces(string label)
         {
-            List<Image<Gray, byte>> images = new List<Image<Gray, byte>>();
-            int count = 0;
+            var images = new List<Image<Gray, byte>>();
+            var count = 0;
             var capture = new Capture();
             while (count < 5)
             {
@@ -115,64 +109,59 @@ namespace FaceDetection.Core
                     //labels.Add(label);
                     count++;
                 }
-
             }
-            humanService.AddHuman(label, images);
+            HumanService.AddHuman(label, images);
             capture.Dispose();
         }
 
         public void Train()
         {
-            List<Image<Gray, byte>> allImages = new List<Image<Gray, byte>>();
-            List<int> idList = new List<int>();
-            foreach (var human in humanService.People)
+            var allImages = new List<Image<Gray, byte>>();
+            var idList = new List<int>();
+            foreach (var human in HumanService.People)
             {
                 allImages.AddRange(human.Images);
-                for (int i = 0; i < human.Images.Count; i++)
+                for (var i = 0; i < human.Images.Count; i++)
                     idList.Add(human.Id);
             }
 
-            faceRecognizer.Train(allImages.ToArray(), idList.ToArray());
-            faceRecognizerTrained = true;
-            faceRecognizer.Save("facerecognizer");
+            _faceRecognizer.Train(allImages.ToArray(), idList.ToArray());
+            _faceRecognizerTrained = true;
+            _faceRecognizer.Save("facerecognizer");
         }
 
         public void Load()
         {
             if (File.Exists("facerecognizer"))
             {
-                faceRecognizer.Load("facerecognizer");
-                faceRecognizerTrained = true;
+                _faceRecognizer.Load("facerecognizer");
+                _faceRecognizerTrained = true;
             }
             if (File.Exists("genderfacerecognizer"))
-                genderFaceRecognizer.Load("genderfacerecognizer");
+                _genderFaceRecognizer.Load("genderfacerecognizer");
         }
-
 
         private Image<Gray, byte> DetectFace(Image<Gray, byte> srcImage)
         {
-            Rectangle[] facesDetected = FaceCascadeClassifier.DetectMultiScale(srcImage, 1.2, 10, new Size(50, 50), Size.Empty);
+            var facesDetected = FaceCascadeClassifier.DetectMultiScale(srcImage, 1.2, 10, new Size(50, 50), Size.Empty);
 
             if (facesDetected.Length > 0)
             {
-                Rectangle maxRectangle = facesDetected.First();
+                var maxRectangle = facesDetected.First();
                 //Action for each element detected
-                for (int i = 0; i < facesDetected.Length; i++) // (Rectangle face_found in facesDetected)
+                foreach (Rectangle tRectangle in facesDetected.Where(tRectangle => tRectangle.Size.Width > maxRectangle.Size.Width))
                 {
-                    if (facesDetected[i].Size.Width > maxRectangle.Size.Width)
-                    {
-                        maxRectangle = facesDetected[i];
-                    }
+                    maxRectangle = tRectangle;
                 }
                 //This will focus in on the face from the haar results its not perfect but it will remove a majoriy
                 //of the background noise
-                maxRectangle.X += (int)(maxRectangle.Height * 0.15);
-                maxRectangle.Y += (int)(maxRectangle.Width * 0.22);
-                maxRectangle.Height -= (int)(maxRectangle.Height * 0.3);
-                maxRectangle.Width -= (int)(maxRectangle.Width * 0.35);
+                maxRectangle.X += (int) (maxRectangle.Height*0.15);
+                maxRectangle.Y += (int) (maxRectangle.Width*0.22);
+                maxRectangle.Height -= (int) (maxRectangle.Height*0.3);
+                maxRectangle.Width -= (int) (maxRectangle.Width*0.35);
 
-                Image<Gray, byte> result = srcImage.Copy(maxRectangle)
-                    .Resize(100, 100, Emgu.CV.CvEnum.Inter.Cubic);
+                var result = srcImage.Copy(maxRectangle)
+                    .Resize(100, 100, Inter.Cubic);
                 result._EqualizeHist();
 
                 return result;
@@ -181,7 +170,7 @@ namespace FaceDetection.Core
         }
 
         /// <summary>
-        /// Обучение на распознавание пола человека
+        ///     Обучение на распознавание пола человека
         /// </summary>
         /// <param name="maleImages"></param>
         /// <param name="femaleImages"></param>
@@ -221,9 +210,9 @@ namespace FaceDetection.Core
                 }
             }
 
-            genderFaceRecognizer.Train(allImages.ToArray(), idList.ToArray());
-            genderFaceRecognizer.Save("genderfacerecognizer");
-            onCount(fCount, mCount);
+            _genderFaceRecognizer.Train(allImages.ToArray(), idList.ToArray());
+            _genderFaceRecognizer.Save("genderfacerecognizer");
+            OnCount(fCount, mCount);
         }
     }
 }
