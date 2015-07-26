@@ -121,8 +121,9 @@ namespace FaceDetection.Core
             foreach (var human in HumanService.People)
             {
                 allImages.AddRange(human.Images);
-                for (var i = 0; i < human.Images.Count; i++)
-                    idList.Add(human.Id);
+                idList.AddRange(human.Images.Select(hm => human.Id));
+                //for (var i = 0; i < human.Images.Count; i++)
+                //    idList.Add(human.Id);
             }
 
             _faceRecognizer.Train(allImages.ToArray(), idList.ToArray());
