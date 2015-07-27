@@ -23,12 +23,14 @@ namespace FaceDetection.Core
         public HumanService HumanService;
         private readonly FaceRecognizer _genderFaceRecognizer;
         private readonly FaceRecognizer _faceRecognizer;
+        private DatabaseService dbs;
 
         public FaceRecognizerService()
         {
             _faceRecognizer = new LBPHFaceRecognizer(1, 8, 8, 8, 100);
             _genderFaceRecognizer = new LBPHFaceRecognizer(1, 8, 8, 8, 100);
             HumanService = new HumanService();
+            dbs = ServicesWorker.GetInstance<DatabaseService>();
             //labels = new List<int>();
             //images = new List<Image<Gray, byte>>();
         }
@@ -62,7 +64,8 @@ namespace FaceDetection.Core
                             var result = _faceRecognizer.Predict(detectedFace);
                             if (result.Label != -1)
                             {
-                                var human = HumanService.People.Find(x => x.Id == result.Label);
+                                //var human = HumanService.People.Find(x => x.Id == result.Label);
+                                var human = HumanService.GetHumanFromId(result.Label);
                                 if (human != null)
                                 {
                                     if (Recognized != null) Recognized(human.Name, result.Distance);
@@ -122,6 +125,7 @@ namespace FaceDetection.Core
             {
                 allImages.AddRange(human.Images);
                 idList.AddRange(human.Images.Select(hm => human.Id));
+                dbs.Insert(human);
                 //for (var i = 0; i < human.Images.Count; i++)
                 //    idList.Add(human.Id);
             }
