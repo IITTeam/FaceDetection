@@ -89,6 +89,10 @@ namespace FaceDetection.Core
                 {
                     capture.Dispose();
                 }
+                catch (Exception exc)
+                {
+
+                }
             }
         }
 
@@ -141,6 +145,10 @@ namespace FaceDetection.Core
             if (File.Exists("facerecognizer"))
             {
                 _faceRecognizer.Load("facerecognizer");
+                foreach (var human in dbs.QueryByClassName<Human>())
+                {
+                    HumanService.People.Add(human);
+                }
                 _faceRecognizerTrained = true;
             }
             if (File.Exists("genderfacerecognizer"))
