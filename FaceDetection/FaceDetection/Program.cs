@@ -22,7 +22,7 @@ namespace FaceDetection
 
             var ts = ServicesWorker.GetInstance<FaceRecognizerService>();
             var dbs = ServicesWorker.GetInstance<DatabaseService>();
-
+            var vs = ServicesWorker.GetInstance<VoiceAssistantService>();
             ts.FaceCascadeClassifier =
                 new CascadeClassifier(Application.StartupPath + "/Cascade/haarcascade_frontalface_default.xml");
             ts.Recognized += WriteResult;
@@ -83,16 +83,17 @@ namespace FaceDetection
 
                         break;
 
-                    //case "say":
-                    //    var i = 1;
-                    //    foreach (var voice in vs.GetAllVoices())
-                    //    {
-                    //        Console.WriteLine(i + "-" + voice);
-                    //    }
-                    //    Console.WriteLine("Выберите голос>>");
-                    //    var input = Convert.ToInt32(Console.ReadLine());
-                    //    vs.SayText("Hi, man!", input);
-                    //    break;
+                    case "say":
+                        var i = 1;
+                        foreach (var voice in vs.GetAllVoices())
+                        {
+                            Console.WriteLine(i + "-" + voice);
+                            i++;
+                        }
+                        Console.WriteLine("Выберите голос>>");
+                        var input = Convert.ToInt32(Console.ReadLine());
+                        vs.SayText("Привет, незнакомец!", input - 1);
+                        break;
                     //    ;
                     case "exit":
                         exitFlag = true;
@@ -125,14 +126,14 @@ namespace FaceDetection
             Console.WriteLine(name + " " + distance);
             if (_counter == 5)
             {
-                vs.SayText("Hello " + name, 0);
+                vs.SayText("Привет " + name, 0);
             }
         }
 
         private static void WriteResult(bool gender, double distance)
         {
             var text = "";
-            text = gender ? "boy" : "girl";
+            text = gender ? "незнакомец" : "незнакомка";
             var vs = ServicesWorker.GetInstance<VoiceAssistantService>();
             if (text == CurrentName)
                 _counter++;
@@ -145,7 +146,7 @@ namespace FaceDetection
             Console.WriteLine(g + " " + distance);
             if (_counter == 5)
             {
-                vs.SayText("Hello " + text, 0);
+                vs.SayText("Привет " + text, 0);
             }
         }
 

@@ -2,7 +2,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
+using Emgu.CV;
+using Emgu.CV.Structure;
 using NDatabase;
 using NDatabase.Api;
 using NDatabase.Api.Query;

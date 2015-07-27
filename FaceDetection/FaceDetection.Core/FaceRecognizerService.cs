@@ -123,7 +123,7 @@ namespace FaceDetection.Core
             var idList = new List<int>();
             foreach (var human in HumanService.People)
             {
-                allImages.AddRange(human.Images);
+                allImages.AddRange(human.ImagesEmgu);
                 idList.AddRange(human.Images.Select(hm => human.Id));
                 dbs.Insert(human);
                 //for (var i = 0; i < human.Images.Count; i++)
