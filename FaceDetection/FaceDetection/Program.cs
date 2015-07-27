@@ -52,7 +52,7 @@ namespace FaceDetection
                         ts.Train();
                         break;
                     case "traingender":
-                        ts.TrainGender(GetSamples("Male"), GetSamples("Female"));
+                        ts.TrainGender(GetSamples("DetMale"), GetSamples("DetFemale"));
                         break;
                     case "load":
                         ts.Load();
@@ -150,10 +150,10 @@ namespace FaceDetection
             }
         }
 
-        private static List<Image<Bgr, byte>> GetSamples(string pathName)
+        private static List<Image<Gray, byte>> GetSamples(string pathName)
         {
             var fileNames = Directory.GetFiles("Images\\" + pathName + "\\", "*.jpg");
-            return fileNames.Select(fileName => new Image<Bgr, byte>(fileName)).ToList();
+            return fileNames.Select(fileName => new Image<Gray, byte>(fileName)).ToList();
         }
     }
 }

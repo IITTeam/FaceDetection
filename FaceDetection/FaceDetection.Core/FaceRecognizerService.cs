@@ -3,6 +3,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Face;
@@ -148,30 +149,38 @@ namespace FaceDetection.Core
 
         private Image<Gray, byte> DetectFace(Image<Gray, byte> srcImage)
         {
-            var facesDetected = FaceCascadeClassifier.DetectMultiScale(srcImage, 1.2, 10, new Size(50, 50), Size.Empty);
-
-            if (facesDetected.Length > 0)
+            try
             {
-                var maxRectangle = facesDetected.First();
-                //Action for each element detected
-                foreach (Rectangle tRectangle in facesDetected.Where(tRectangle => tRectangle.Size.Width > maxRectangle.Size.Width))
+                var facesDetected = FaceCascadeClassifier.DetectMultiScale(srcImage, 1.2, 10, new Size(50, 50), Size.Empty);
+
+                if (facesDetected.Length > 0)
                 {
-                    maxRectangle = tRectangle;
+                    var maxRectangle = facesDetected.First();
+                    //Action for each element detected
+                    foreach (Rectangle tRectangle in facesDetected.Where(tRectangle => tRectangle.Size.Width > maxRectangle.Size.Width))
+                    {
+                        maxRectangle = tRectangle;
+                    }
+                    //This will focus in on the face from the haar results its not perfect but it will remove a majoriy
+                    //of the background noise
+                    maxRectangle.X += (int)(maxRectangle.Height * 0.15);
+                    maxRectangle.Y += (int)(maxRectangle.Width * 0.22);
+                    maxRectangle.Height -= (int)(maxRectangle.Height * 0.3);
+                    maxRectangle.Width -= (int)(maxRectangle.Width * 0.35);
+
+                    var result = srcImage.Copy(maxRectangle)
+                        .Resize(100, 100, Inter.Cubic);
+                    result._EqualizeHist();
+
+                    return result;
                 }
-                //This will focus in on the face from the haar results its not perfect but it will remove a majoriy
-                //of the background noise
-                maxRectangle.X += (int) (maxRectangle.Height*0.15);
-                maxRectangle.Y += (int) (maxRectangle.Width*0.22);
-                maxRectangle.Height -= (int) (maxRectangle.Height*0.3);
-                maxRectangle.Width -= (int) (maxRectangle.Width*0.35);
-
-                var result = srcImage.Copy(maxRectangle)
-                    .Resize(100, 100, Inter.Cubic);
-                result._EqualizeHist();
-
-                return result;
+                return null;
             }
-            return null;
+            catch (Exception ex)
+            {
+                srcImage.Save("Images\\badImg.jpg");
+                return null;
+            }
         }
 
         /// <summary>
@@ -179,7 +188,7 @@ namespace FaceDetection.Core
         /// </summary>
         /// <param name="maleImages"></param>
         /// <param name="femaleImages"></param>
-        public void TrainGender(List<Image<Bgr, byte>> maleImages, List<Image<Bgr, byte>> femaleImages)
+        public void TrainGender(List<Image<Gray, byte>> maleImages, List<Image<Gray, byte>> femaleImages)
         {
             var allImages = new List<Image<Gray, byte>>();
             var idList = new List<int>();
@@ -187,32 +196,41 @@ namespace FaceDetection.Core
             var fCount = 0;
             var mCount = 0;
 
-
-            foreach (var femaleImage in femaleImages)
+            try
             {
-                femaleImage._EqualizeHist();
-                var grayImage = femaleImage.Convert<Gray, byte>();
-                var detectedFace = DetectFace(grayImage);
-                if (detectedFace != null)
+
+                foreach (var femaleImage in femaleImages)
                 {
-                    allImages.Add(detectedFace);
-                    idList.Add(0);
-                    fCount++;
+                    //femaleImage._EqualizeHist();
+                    //var grayImage = femaleImage.Convert<Gray, byte>();
+                    //var detectedFace = DetectFace(grayImage);
+                    //if (detectedFace != null)
+                    //{
+                    allImages.Add(femaleImage);
+                      //  detectedFace.Save("Images\\DetFemale\\" + femaleImages.IndexOf(femaleImage) + ".jpg");
+                        idList.Add(0);
+                        fCount++;
+                    //}
+                }
+
+
+                foreach (var maleImage in maleImages)
+                {
+                    //maleImage._EqualizeHist();
+                    //var grayImage = maleImage.Convert<Gray, byte>();
+                    //var detectedFace = DetectFace(grayImage);
+                    //if (detectedFace != null)
+                    //{
+                    allImages.Add(maleImage);
+                       // detectedFace.Save("Images\\DetMale\\" + maleImages.IndexOf(maleImage) + ".jpg");
+                        idList.Add(1);
+                        mCount++;
+                   // }
                 }
             }
-
-
-            foreach (var maleImage in maleImages)
+            catch (Exception ex)
             {
-                maleImage._EqualizeHist();
-                var grayImage = maleImage.Convert<Gray, byte>();
-                var detectedFace = DetectFace(grayImage);
-                if (detectedFace != null)
-                {
-                    allImages.Add(detectedFace);
-                    idList.Add(1);
-                    mCount++;
-                }
+                
             }
 
             _genderFaceRecognizer.Train(allImages.ToArray(), idList.ToArray());
