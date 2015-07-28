@@ -34,6 +34,7 @@ namespace FaceDetection.Core
             _genderFaceRecognizer = new LBPHFaceRecognizer(1, 8, 8, 8, 100);
             HumanService = new HumanService();
             dbs = ServicesWorker.GetInstance<DatabaseService>();
+            Load();
             //labels = new List<int>();
             //images = new List<Image<Gray, byte>>();
         }
@@ -55,7 +56,7 @@ namespace FaceDetection.Core
                 try
                 {
                     var image = capture.QueryFrame().ToImage<Bgr, byte>();
-                    image._EqualizeHist();
+                    //image._EqualizeHist();
                     var grayImage = image.Convert<Gray, byte>();
 
 
@@ -105,15 +106,15 @@ namespace FaceDetection.Core
             while (count < FaceCount)
             {
                 var image = capture.QueryFrame().ToImage<Bgr, byte>();
-                image._EqualizeHist();
+                //image._EqualizeHist();
                 var grayImage = image.Convert<Gray, byte>();
 
                 var detectedFace = DetectFace(grayImage);
                 if (detectedFace != null)
                 {
                     images.Add(detectedFace);
-                    Directory.CreateDirectory("Images\\"+name);
-                    detectedFace.Save("Images\\"+name+"\\"+count+".jpg");
+                    Directory.CreateDirectory("Images\\" + name);
+                    detectedFace.Save("Images\\" + name + "\\" + count + ".jpg");
                     count++;
                     Thread.Sleep(500);
                 }
@@ -193,6 +194,55 @@ namespace FaceDetection.Core
             }
         }
 
+        public void DetectGender(List<Image<Gray, byte>> maleImages, List<Image<Gray, byte>> femaleImages)
+        {
+            var allImages = new List<Image<Gray, byte>>();
+            var idList = new List<int>();
+
+            var fCount = 0;
+            var mCount = 0;
+
+            try
+            {
+                foreach (var femaleImage in femaleImages)
+                {
+                   // femaleImage._EqualizeHist();
+                    var grayImage = femaleImage.Convert<Gray, byte>();
+                    var detectedFace = DetectFace(grayImage);
+                    if (detectedFace != null)
+                    {
+                        allImages.Add(femaleImage);
+                        detectedFace.Save("Images\\DetFemale\\" + femaleImages.IndexOf(femaleImage) + ".jpg");
+                        idList.Add(0);
+                        fCount++;
+                    }
+                }
+
+
+                foreach (var maleImage in maleImages)
+                {
+                    //maleImage._EqualizeHist();
+                    var grayImage = maleImage.Convert<Gray, byte>();
+                    var detectedFace = DetectFace(grayImage);
+                    if (detectedFace != null)
+                    {
+                        allImages.Add(maleImage);
+                        detectedFace.Save("Images\\DetMale\\" + maleImages.IndexOf(maleImage) + ".jpg");
+                        idList.Add(1);
+                        mCount++;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            //_genderFaceRecognizer.Train(allImages.ToArray(), idList.ToArray());
+            //_genderFaceRecognizer.Save("genderfacerecognizer");
+            OnCount(fCount, mCount);
+        }
+
         /// <summary>
         ///     Обучение на распознавание пола человека
         /// </summary>
@@ -208,7 +258,6 @@ namespace FaceDetection.Core
 
             try
             {
-
                 foreach (var femaleImage in femaleImages)
                 {
                     //femaleImage._EqualizeHist();
@@ -217,9 +266,9 @@ namespace FaceDetection.Core
                     //if (detectedFace != null)
                     //{
                     allImages.Add(femaleImage);
-                      //  detectedFace.Save("Images\\DetFemale\\" + femaleImages.IndexOf(femaleImage) + ".jpg");
-                        idList.Add(0);
-                        fCount++;
+                    //  detectedFace.Save("Images\\DetFemale\\" + femaleImages.IndexOf(femaleImage) + ".jpg");
+                    idList.Add(0);
+                    fCount++;
                     //}
                 }
 
@@ -232,15 +281,15 @@ namespace FaceDetection.Core
                     //if (detectedFace != null)
                     //{
                     allImages.Add(maleImage);
-                       // detectedFace.Save("Images\\DetMale\\" + maleImages.IndexOf(maleImage) + ".jpg");
-                        idList.Add(1);
-                        mCount++;
-                   // }
+                    // detectedFace.Save("Images\\DetMale\\" + maleImages.IndexOf(maleImage) + ".jpg");
+                    idList.Add(1);
+                    mCount++;
+                    // }
                 }
             }
             catch (Exception ex)
             {
-                
+
             }
 
             _genderFaceRecognizer.Train(allImages.ToArray(), idList.ToArray());

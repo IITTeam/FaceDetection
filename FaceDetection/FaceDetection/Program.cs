@@ -54,6 +54,9 @@ namespace FaceDetection
                     case "traingender":
                         ts.TrainGender(GetSamples("DetMale"), GetSamples("DetFemale"));
                         break;
+                    case "detectGender":
+                        ts.DetectGender(GetSamples("Male"), GetSamples("Female"));
+                        break;
                     case "load":
                         ts.Load();
                         break;
