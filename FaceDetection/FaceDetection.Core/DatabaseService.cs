@@ -24,7 +24,9 @@ namespace FaceDetection.Core
         {
             using (var db = OdbFactory.Open(DbName))
             {
-                db.Store(obj);
+                var obd = db.Store(obj);
+                if (db.GetObjectFromId(obd) != null)
+                    db.Rollback();
             }
         }
 

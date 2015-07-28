@@ -58,12 +58,12 @@ namespace FaceDetection
                         ts.Load();
                         break;
                     case "db":
-                        //dbs.QueryByClassName<Human>();
+                        dbs.QueryByClassName<Human>();
                         //var d = new Dictionary<string, object>();
                         //d.Add("Id", 111);
                         //dbs.Query<Human>(d);
-                        ////dbs.Insert(new Human(111,"test",new List<Image<Gray, byte>>()));
-                        ////dbs.QueryByClassName<Human>();
+                        dbs.Insert(new Human(111,"test",new List<Image<Gray, byte>>()));
+                        dbs.QueryByClassName<Human>();
                         break;
                     case "check":
                         try
@@ -92,7 +92,7 @@ namespace FaceDetection
                         }
                         Console.WriteLine("Выберите голос>>");
                         var input = Convert.ToInt32(Console.ReadLine());
-                        vs.SayText("Привет, незнакомец!", input - 1);
+                        vs.SayText("Привет, незнакомка !", input - 1);
                         break;
                     //    ;
                     case "exit":
