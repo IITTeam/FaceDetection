@@ -28,7 +28,8 @@ namespace FaceDetection.Core
 
         public Human GetHumanFromId(int id)
         {
-            return ServicesWorker.GetInstance<DatabaseService>().Query<Human>(new Dictionary<string, object> { { "Id", id } });
+            //new Dictionary<string, object> { { "Id", id } }
+            return ServicesWorker.GetInstance<DatabaseService>().Query<Human>(id) as Human;
         }
     }
 }
