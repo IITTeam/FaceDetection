@@ -12,7 +12,6 @@ namespace FaceDetection.Core
         public int Id { get; private set; }
         public string Name { get; private set; }
         public List<Bitmap> Images { get; set; }
-        public bool Gender { get; private set; }
         [NonPersistent]
         public List<Image<Gray, byte>> ImagesEmgu;
 
@@ -21,7 +20,6 @@ namespace FaceDetection.Core
             Id = id;
             Name = name;
             ImagesEmgu = new List<Image<Gray, byte>>(images);
-            Images = images.Select(i => i.Bitmap).ToList();
         }
     }
 }

@@ -20,13 +20,14 @@ namespace FaceDetection.Core
         {
         }
 
-        public void Insert(object obj)
+        public void Insert<T>(int id, object obj) where T : class
         {
-            using (var db = OdbFactory.Open(DbName))
+            if (this.Query<T>(new Dictionary<string, object> { { "Id", id } }) == null)
             {
-                var obd = db.Store(obj);
-                if (db.GetObjectFromId(obd) != null)
-                    db.Rollback();
+                using (var db = OdbFactory.Open(DbName))
+                {
+                    db.Store(obj);
+                }
             }
         }
 
@@ -40,16 +41,24 @@ namespace FaceDetection.Core
 
         public T Query<T>(Dictionary<string, object> @params) where T : class
         {
-            using (var db = OdbFactory.Open(DbName))
+            try
             {
-                IObjectSet<T> result = null;
-                foreach (var param in @params)
+                using (var db = OdbFactory.Open(DbName))
                 {
-                    IQuery query = db.Query<T>();
-                    query.Descend(param.Key).Constrain(param.Value).Equal();
-                    result = query.Execute<T>();
+                    IObjectSet<T> result = null;
+                    foreach (var param in @params)
+                    {
+                        IQuery query = db.Query<T>();
+                        query.Descend(param.Key).Constrain(param.Value).Equal();
+                        result = query.Execute<T>();
+                    }
+                    return result.GetFirst();
                 }
-                return result.GetFirst();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
             }
         }
 

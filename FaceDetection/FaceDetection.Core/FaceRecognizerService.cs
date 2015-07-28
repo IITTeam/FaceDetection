@@ -96,10 +96,7 @@ namespace FaceDetection.Core
             }
         }
 
-        //List<int> labels;
-        //List<Image<Gray, byte>> images;
-
-        public void AddFaces(string label)
+        public void AddFaces(string name)
         {
             var images = new List<Image<Gray, byte>>();
             var count = 0;
@@ -114,11 +111,11 @@ namespace FaceDetection.Core
                 if (detectedFace != null)
                 {
                     images.Add(detectedFace);
-                    //labels.Add(label);
+                    detectedFace.Save("Images\\"+name+"\\"+count+".jpg");
                     count++;
                 }
             }
-            HumanService.AddHuman(label, images);
+            HumanService.AddHuman(name, images);
             capture.Dispose();
         }
 
@@ -129,10 +126,10 @@ namespace FaceDetection.Core
             foreach (var human in HumanService.People)
             {
                 allImages.AddRange(human.ImagesEmgu);
+
                 idList.AddRange(human.Images.Select(hm => human.Id));
-                dbs.Insert(human);
-                //for (var i = 0; i < human.Images.Count; i++)
-                //    idList.Add(human.Id);
+
+                dbs.Insert<Human>(human.Id, human);
             }
 
             _faceRecognizer.Train(allImages.ToArray(), idList.ToArray());
@@ -147,6 +144,8 @@ namespace FaceDetection.Core
                 _faceRecognizer.Load("facerecognizer");
                 foreach (var human in dbs.QueryByClassName<Human>())
                 {
+                    var fileNames = Directory.GetFiles("Images\\" + human.Name + "\\", "*.jpg");
+                    human.ImagesEmgu = new List<Image<Gray, byte>>(fileNames.Select(fileName => new Image<Gray, byte>(fileName)).ToList());
                     HumanService.People.Add(human);
                 }
                 _faceRecognizerTrained = true;
@@ -160,7 +159,6 @@ namespace FaceDetection.Core
             try
             {
                 var facesDetected = FaceCascadeClassifier.DetectMultiScale(srcImage, 1.2, 10, new Size(50, 50), Size.Empty);
-
                 if (facesDetected.Length > 0)
                 {
                     var maxRectangle = facesDetected.First();
