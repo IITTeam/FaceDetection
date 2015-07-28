@@ -19,6 +19,8 @@ namespace FaceDetection.Core
 
         public delegate void RecognizeContainer(string name, double distance);
 
+        private const int FaceCount = 10;
+
         private bool _anyKeyPress = false;
         private bool _faceRecognizerTrained;
         public HumanService HumanService;
@@ -28,7 +30,7 @@ namespace FaceDetection.Core
 
         public FaceRecognizerService()
         {
-            _faceRecognizer = new LBPHFaceRecognizer(1, 8, 8, 8, 100);
+            _faceRecognizer = new LBPHFaceRecognizer(1, 8, 8, 8, 80);
             _genderFaceRecognizer = new LBPHFaceRecognizer(1, 8, 8, 8, 100);
             HumanService = new HumanService();
             dbs = ServicesWorker.GetInstance<DatabaseService>();
@@ -65,7 +67,6 @@ namespace FaceDetection.Core
                             var result = _faceRecognizer.Predict(detectedFace);
                             if (result.Label != -1)
                             {
-                                //var human = HumanService.People.Find(x => x.Id == result.Label);
                                 var human = HumanService.GetHumanFromId(result.Label);
                                 if (human != null)
                                 {
@@ -101,7 +102,7 @@ namespace FaceDetection.Core
             var images = new List<Image<Gray, byte>>();
             var count = 0;
             var capture = new Capture();
-            while (count < 5)
+            while (count < FaceCount)
             {
                 var image = capture.QueryFrame().ToImage<Bgr, byte>();
                 image._EqualizeHist();
@@ -111,8 +112,10 @@ namespace FaceDetection.Core
                 if (detectedFace != null)
                 {
                     images.Add(detectedFace);
+                    Directory.CreateDirectory("Images\\"+name);
                     detectedFace.Save("Images\\"+name+"\\"+count+".jpg");
                     count++;
+                    Thread.Sleep(500);
                 }
             }
             HumanService.AddHuman(name, images);
@@ -127,7 +130,7 @@ namespace FaceDetection.Core
             {
                 allImages.AddRange(human.ImagesEmgu);
 
-                idList.AddRange(human.Images.Select(hm => human.Id));
+                idList.AddRange(human.ImagesEmgu.Select(hm => human.Id));
 
                 dbs.Insert<Human>(human.Id, human);
             }
@@ -139,12 +142,13 @@ namespace FaceDetection.Core
 
         public void Load()
         {
+            HumanService.People.Clear();
             if (File.Exists("facerecognizer"))
             {
                 _faceRecognizer.Load("facerecognizer");
                 foreach (var human in dbs.QueryByClassName<Human>())
                 {
-                    var fileNames = Directory.GetFiles("Images\\" + human.Name + "\\", "*.jpg");
+                    var fileNames = Directory.GetFiles("Images\\" + human.Name, "*.jpg");
                     human.ImagesEmgu = new List<Image<Gray, byte>>(fileNames.Select(fileName => new Image<Gray, byte>(fileName)).ToList());
                     HumanService.People.Add(human);
                 }
