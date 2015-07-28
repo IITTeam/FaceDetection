@@ -70,5 +70,10 @@ namespace FaceDetection.Core
                 return result.ToList();
             }
         }
+
+        public void Clear()
+        {
+            OdbFactory.Delete(DbName);
+        }
     }
 }

@@ -25,7 +25,7 @@ namespace FaceDetection.Core
         public void SayText(string text, int voice)
         {
             _synthesizer.SelectVoice(_synthesizer.GetInstalledVoices().ToList()[voice].VoiceInfo.Name);
-            _synthesizer.Speak(text);
+            _synthesizer.SpeakAsync(text);
         }
 
 
