@@ -60,14 +60,6 @@ namespace FaceDetection
                     case "load":
                         ts.Load();
                         break;
-                    case "db":
-                        dbs.QueryByClassName<Human>();
-                        //var d = new Dictionary<string, object>();
-                        //d.Add("Id", 111);
-                        //dbs.Query<Human>(d);
-                        //dbs.Insert<Human>(new Human(111,"test",new List<Image<Gray, byte>>()));
-                        dbs.QueryByClassName<Human>();
-                        break;
                     case "check":
                         try
                         {
@@ -85,15 +77,7 @@ namespace FaceDetection
                         }
                         break;
                     case "say":
-                        var i = 1;
-                        foreach (var voice in vs.GetAllVoices())
-                        {
-                            Console.WriteLine(i + "-" + voice);
-                            i++;
-                        }
-                        Console.WriteLine("Выберите голос>>");
-                        var input = Convert.ToInt32(Console.ReadLine());
-                        vs.SayText("Привет, незнакомка !", input - 1);
+                        vs.SayText("Привет, незнакомка !");
                         break;
                     case "exit":
                         exitFlag = true;
@@ -126,7 +110,7 @@ namespace FaceDetection
             Console.WriteLine(name + " " + distance);
             if (_counter == 5)
             {
-                vs.SayText("Привет " + name, 0);
+                vs.SayText("Привет " + name);
             }
         }
 
@@ -146,7 +130,7 @@ namespace FaceDetection
             Console.WriteLine(g + " " + distance);
             if (_counter == 5)
             {
-                vs.SayText("Привет " + text, 0);
+                vs.SayText("Привет " + text);
             }
         }
 
