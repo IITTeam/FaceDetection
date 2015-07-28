@@ -60,6 +60,10 @@
     <Reference Include="Emgu.Util">
       <HintPath>..\..\..\..\Emgu\libemgucv-windows-universal-3.0.0.2157\bin\Emgu.Util.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Speech, Version=11.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files\Microsoft SDKs\Speech\v11.0\Assembly\Microsoft.Speech.dll</HintPath>
+    </Reference>
     <Reference Include="NDatabase3, Version=3.8.0.117, Culture=neutral, PublicKeyToken=31d8e3cda240c056, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Libs\NDatabase.3.8-v3.5\NDatabase3.dll</HintPath>

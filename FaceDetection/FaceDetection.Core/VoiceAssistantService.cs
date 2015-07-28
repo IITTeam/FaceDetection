@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System;
+using System.IO;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Resources;
@@ -18,7 +18,8 @@ namespace FaceDetection.Core
             _synthesizer = new SpeechSynthesizer();
             _synthesizer.SetOutputToDefaultAudioDevice();
             _synthesizer.Volume = 100;
-            _synthesizer.AddLexicon(new Uri("C:\\Users\\Alexey\\Documents\\GitHub\\FaceDetection\\FaceDetection\\FaceDetection.Core\\Resources\\Lexicon.pls"), "application/pls+xml");
+            //Path.GetFullPath("Resources/Lexicon.pls");
+            _synthesizer.AddLexicon(new Uri(Path.GetFullPath("Resources/Lexicon.pls")), "application/pls+xml");
         }
 
         public void SayText(string text, int voice)
