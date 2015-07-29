@@ -24,7 +24,7 @@ namespace FaceDetection.CommandProcessor
                 Console.WriteLine(@"Пожалуйста, во время записи постарайтесь" + @"" +
                                   @"продемонстрировать разные выражения лица");
                 var name = Console.ReadLine();
-                ServicesWorker.GetInstance<FaceRecognizerService>().AddFaces(name);
+                ServicesWorker.GetInstance<FaceRecognizerService>().AddImagesToHuman(name);
             }
             catch (Exception ex)
             {

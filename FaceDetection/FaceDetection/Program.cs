@@ -16,12 +16,11 @@ namespace FaceDetection
 
         private static void Main(string[] args)
         {
-            var exitFlag = false;
             ServicesWorker.Registration(new CoreModule());
 
             var faceRecognizerService = ServicesWorker.GetInstance<FaceRecognizerService>();
             faceRecognizerService.FaceCascadeClassifier =
-                new CascadeClassifier(Application.StartupPath + "/Cascade/haarcascade_frontalface_default.xml");
+                new CascadeClassifier(Application.StartupPath + "\\Cascade\\haarcascade_frontalface_default.xml");
             faceRecognizerService.Recognized += WriteResult;
             faceRecognizerService.GenderRecognized += WriteResult;
             faceRecognizerService.OnGenderCount += WriteGenderRecognizedCount;

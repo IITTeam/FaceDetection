@@ -16,6 +16,7 @@ namespace FaceDetection.Core
             container.RegisterService(() => new FaceRecognizerService());
             container.RegisterService(()=>new VoiceAssistantService());
             container.RegisterService(() => new DatabaseService());
+            container.RegisterService(() => new HumanService());
         }
     }
 }

@@ -12,7 +12,7 @@ namespace FaceDetection.CommandProcessor
 
         public string Description
         {
-            get { return " - завершает работу приложения."; }
+            get { return "- завершает работу приложения."; }
         }
         private Application _app;
 

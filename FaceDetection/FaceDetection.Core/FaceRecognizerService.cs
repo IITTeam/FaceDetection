@@ -14,74 +14,51 @@ namespace FaceDetection.Core
     public class FaceRecognizerService
     {
         public delegate void CounterGenderContainer(int f, int m);
-
         public delegate void GenderRecognizeContainer(bool gender, double distance);
-
         public delegate void RecognizeContainer(string name, double distance);
-
         public delegate void CounterContainer(int c, int a);
 
-        private const int FaceCount = 10;
-
-        private bool _anyKeyPress = false;
-        private bool _faceRecognizerTrained;
-        public HumanService HumanService;
-        private readonly FaceRecognizer _genderFaceRecognizer;
-        private readonly FaceRecognizer _faceRecognizer;
-        private DatabaseService dbs;
-
-        public FaceRecognizerService()
-        {
-            _faceRecognizer = new LBPHFaceRecognizer(1, 8, 8, 8, 80);
-            _genderFaceRecognizer = new LBPHFaceRecognizer(1, 8, 8, 8, 100);
-            HumanService = new HumanService();
-            dbs = ServicesWorker.GetInstance<DatabaseService>();
-            Load();
-            //labels = new List<int>();
-            //images = new List<Image<Gray, byte>>();
-        }
-
-        public CascadeClassifier FaceCascadeClassifier { get; set; }
         public event RecognizeContainer Recognized;
         public event GenderRecognizeContainer GenderRecognized;
         public event CounterGenderContainer OnGenderCount;
         public event CounterContainer OnCount;
-        //public double StartCapture(Image<Bgr, byte> image)
-        //{
-        //    return Recognize(image);
-        //}
 
-        public void StartCapture()
+        private const int FaceCount = 10;
+
+        private bool _faceRecognizerTrained;
+
+        private HumanService humanService;
+        
+        private readonly FaceRecognizer _genderFaceRecognizer;
+        private readonly FaceRecognizer _faceRecognizer;
+
+        public CascadeClassifier FaceCascadeClassifier { get; set; }
+        
+        public FaceRecognizerService()
+        {
+            _faceRecognizer = new LBPHFaceRecognizer(1, 8, 8, 8, 80);
+            _genderFaceRecognizer = new LBPHFaceRecognizer(1, 8, 8, 8, 100);
+            humanService = ServicesWorker.GetInstance<HumanService>();
+            Load();
+        }
+      
+        public void DetectFace()
         {
             var capture = new Capture();
             while (true)
             {
                 try
                 {
-                    var image = capture.QueryFrame().ToImage<Bgr, byte>();
+                    var image = capture.QueryFrame().ToImage<Gray, byte>();
                     //image._EqualizeHist();
-                    var grayImage = image.Convert<Gray, byte>();
 
-
-                    var detectedFace = DetectFace(grayImage);
+                    var detectedFace = DetectFace(image);
                     if (detectedFace != null)
                     {
                         if (_faceRecognizerTrained)
                         {
-                            var result = _faceRecognizer.Predict(detectedFace);
-                            if (result.Label != -1)
-                            {
-                                var human = HumanService.GetHumanFromId(result.Label);
-                                if (human != null)
-                                {
-                                    if (Recognized != null) Recognized(human.Name, result.Distance);
-                                }
-                                else
-                                {
-                                    if (Recognized != null) Recognized(result.Label.ToString(), result.Distance);
-                                }
+                            if (RecognizeFamiliarPerson(detectedFace))
                                 continue;
-                            }
                         }
                         var gender = _genderFaceRecognizer.Predict(detectedFace);
                         if (gender.Label != -1)
@@ -94,52 +71,63 @@ namespace FaceDetection.Core
                 {
                     capture.Dispose();
                 }
-                catch (Exception exc)
-                {
-
-                }
             }
         }
 
-        public void AddFaces(string name)
+        private bool RecognizeFamiliarPerson(Image<Gray, byte> detectedFace)
+        {
+            var result = _faceRecognizer.Predict(detectedFace);
+            if (result.Label != -1)
+            {
+                var human = humanService.GetHumanFromId(result.Label);
+                if (human != null)
+                {
+                    if (Recognized != null) Recognized(human.Name, result.Distance);
+                }
+                else
+                {
+                    if (Recognized != null) Recognized(result.Label.ToString(), result.Distance);
+                }
+                return true;
+            }
+            return false;
+        }
+
+        public List<Image<Gray, byte>> AddImagesToHuman(string name)
         {
             var images = new List<Image<Gray, byte>>();
             var count = 0;
             var capture = new Capture();
             while (count < FaceCount)
             {
-                var image = capture.QueryFrame().ToImage<Bgr, byte>();
+                var image = capture.QueryFrame().ToImage<Gray, byte>();
                 //image._EqualizeHist();
-                var grayImage = image.Convert<Gray, byte>();
 
-                var detectedFace = DetectFace(grayImage);
+                var detectedFace = DetectFace(image);
                 if (detectedFace != null)
                 {
                     images.Add(detectedFace);
-                    Directory.CreateDirectory("Images\\" + name);
-                    detectedFace.Save("Images\\" + name + "\\" + count + ".jpg");
+                    //Directory.CreateDirectory("Images\\" + name);
+                    //detectedFace.Save("Images\\" + name + "\\" + count + ".jpg");
                     count++;
                     OnCount(count, FaceCount);
                     Thread.Sleep(500);
                 }
             }
-            HumanService.AddHuman(name, images);
+            humanService.AddHuman(name, images);
             capture.Dispose();
+            return images;
         }
 
-        public void Train()
+        public void TrainFaceRecognizer()
         {
             var allImages = new List<Image<Gray, byte>>();
             var idList = new List<int>();
-            foreach (var human in HumanService.People)
+            foreach (var human in humanService.People)
             {
                 allImages.AddRange(human.ImagesEmgu);
-
                 idList.AddRange(human.ImagesEmgu.Select(hm => human.Id));
-
-                dbs.Insert<Human>(human.Id, human);
             }
-
             _faceRecognizer.Train(allImages.ToArray(), idList.ToArray());
             _faceRecognizerTrained = true;
             _faceRecognizer.Save("facerecognizer");
@@ -147,16 +135,17 @@ namespace FaceDetection.Core
 
         public void Load()
         {
-            HumanService.People.Clear();
+            //humanService.People.Clear();
             if (File.Exists("facerecognizer"))
             {
                 _faceRecognizer.Load("facerecognizer");
-                foreach (var human in dbs.QueryByClassName<Human>())
-                {
-                    var fileNames = Directory.GetFiles("Images\\" + human.Name, "*.jpg");
-                    human.ImagesEmgu = new List<Image<Gray, byte>>(fileNames.Select(fileName => new Image<Gray, byte>(fileName)).ToList());
-                    HumanService.People.Add(human);
-                }
+                humanService.LoadFromDB();
+                //foreach (var human in humanService.People)
+                //{
+                //    var fileNames = Directory.GetFiles("Images\\" + human.Name, "*.jpg");
+                //    human.ImagesEmgu = new List<Image<Gray, byte>>(fileNames.Select(fileName => new Image<Gray, byte>(fileName)).ToList());
+                //    //humanService.People.Add(human);
+                //}
                 _faceRecognizerTrained = true;
             }
             if (File.Exists("genderfacerecognizer"))
@@ -200,9 +189,6 @@ namespace FaceDetection.Core
 
         public void DetectGender(List<Image<Gray, byte>> maleImages, List<Image<Gray, byte>> femaleImages)
         {
-            var allImages = new List<Image<Gray, byte>>();
-            var idList = new List<int>();
-
             var fCount = 0;
             var mCount = 0;
 
@@ -210,18 +196,15 @@ namespace FaceDetection.Core
             {
                 foreach (var femaleImage in femaleImages)
                 {
-                    // femaleImage._EqualizeHist();
+                   // femaleImage._EqualizeHist();
                     var grayImage = femaleImage.Convert<Gray, byte>();
                     var detectedFace = DetectFace(grayImage);
                     if (detectedFace != null)
                     {
-                        allImages.Add(femaleImage);
                         detectedFace.Save("Images\\DetFemale\\" + femaleImages.IndexOf(femaleImage) + ".jpg");
-                        idList.Add(0);
                         fCount++;
                     }
                 }
-
 
                 foreach (var maleImage in maleImages)
                 {
@@ -230,9 +213,7 @@ namespace FaceDetection.Core
                     var detectedFace = DetectFace(grayImage);
                     if (detectedFace != null)
                     {
-                        allImages.Add(maleImage);
                         detectedFace.Save("Images\\DetMale\\" + maleImages.IndexOf(maleImage) + ".jpg");
-                        idList.Add(1);
                         mCount++;
                     }
                 }
@@ -242,8 +223,6 @@ namespace FaceDetection.Core
 
             }
 
-            //_genderFaceRecognizer.Train(allImages.ToArray(), idList.ToArray());
-            //_genderFaceRecognizer.Save("genderfacerecognizer");
             OnGenderCount(fCount, mCount);
         }
 
@@ -264,31 +243,16 @@ namespace FaceDetection.Core
             {
                 foreach (var femaleImage in femaleImages)
                 {
-                    //femaleImage._EqualizeHist();
-                    //var grayImage = femaleImage.Convert<Gray, byte>();
-                    //var detectedFace = DetectFace(grayImage);
-                    //if (detectedFace != null)
-                    //{
                     allImages.Add(femaleImage);
-                    //  detectedFace.Save("Images\\DetFemale\\" + femaleImages.IndexOf(femaleImage) + ".jpg");
                     idList.Add(0);
                     fCount++;
-                    //}
                 }
-
 
                 foreach (var maleImage in maleImages)
                 {
-                    //maleImage._EqualizeHist();
-                    //var grayImage = maleImage.Convert<Gray, byte>();
-                    //var detectedFace = DetectFace(grayImage);
-                    //if (detectedFace != null)
-                    //{
                     allImages.Add(maleImage);
-                    // detectedFace.Save("Images\\DetMale\\" + maleImages.IndexOf(maleImage) + ".jpg");
                     idList.Add(1);
                     mCount++;
-                    // }
                 }
             }
             catch (Exception ex)

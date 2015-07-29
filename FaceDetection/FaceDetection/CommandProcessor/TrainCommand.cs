@@ -27,7 +27,7 @@ namespace FaceDetection.CommandProcessor
             switch (choice)
             {
                 case 1:
-                    ServicesWorker.GetInstance<FaceRecognizerService>().Train();
+                    ServicesWorker.GetInstance<FaceRecognizerService>().TrainFaceRecognizer();
                     break;
                 case 2:
                     ServicesWorker.GetInstance<FaceRecognizerService>()

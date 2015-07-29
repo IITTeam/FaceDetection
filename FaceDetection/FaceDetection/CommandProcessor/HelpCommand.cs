@@ -14,7 +14,7 @@ namespace FaceDetection.CommandProcessor
 
         public string Description
         {
-            get { return " - вводит список доступных команд;"; }
+            get { return "- вводит список доступных команд;"; }
         }
         private readonly Application _app;
 
@@ -28,7 +28,7 @@ namespace FaceDetection.CommandProcessor
             Console.WriteLine("=====================================================================");
             foreach (var item in _app.AvailableCommands)
             {
-                Console.WriteLine(item.Name + item.Description);
+                Console.WriteLine(item.Name + " " + item.Description);
             }
             Console.WriteLine("=====================================================================");
         }
