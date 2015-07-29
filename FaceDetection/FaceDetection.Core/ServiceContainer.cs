@@ -5,16 +5,16 @@ namespace FaceDetection.Core
 {
     public class ServiceContainer
     {
-        private readonly static Dictionary<Type, Func<object>> services = new Dictionary<Type, Func<object>>();
-        public void RegisterService<T>(Func<T> factory)
+        private readonly static Dictionary<Type, object> Services = new Dictionary<Type, object>();
+        public void RegisterService<T>(T obj)
             where T : class
         {
-            services[typeof(T)] = () => factory();
+            Services.Add(typeof(T), obj);
         }
 
         internal static object GetService(Type type)
         {
-            return services[type]();
+            return Services[type];
         }
     }
 }

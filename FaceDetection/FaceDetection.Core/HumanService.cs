@@ -11,12 +11,10 @@ namespace FaceDetection.Core
     public class HumanService
     {
         public List<Human> People { get; set; }
-        private DatabaseService dbs;
 
         public HumanService()
         {
             People = new List<Human>();
-            dbs = ServicesWorker.GetInstance<DatabaseService>();
         }
 
         public void AddHuman(string label, List<Image<Gray, byte>> images)
@@ -24,7 +22,7 @@ namespace FaceDetection.Core
             int id = People.Count;
             var human = new Human(id, label, images);
             People.Add(human);
-            dbs.Insert<Human>(id, human);
+            ServicesWorker.GetInstance<DatabaseService>().Insert<Human>(id, human);
         }
 
         public Human GetHumanFromId(int id)
@@ -35,7 +33,7 @@ namespace FaceDetection.Core
         public void LoadFromDB()
         {
             People.Clear();
-            foreach (var human in dbs.QueryByClassName<Human>())
+            foreach (var human in ServicesWorker.GetInstance<DatabaseService>().QueryByClassName<Human>())
             {
                 var fileNames = Directory.GetFiles("Images\\" + human.Name, "*.jpg");
                 human.ImagesEmgu = new List<Image<Gray, byte>>(fileNames.Select(fileName => new Image<Gray, byte>(fileName)).ToList());

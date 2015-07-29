@@ -25,6 +25,7 @@ namespace FaceDetection
             faceRecognizerService.GenderRecognized += WriteResult;
             faceRecognizerService.OnGenderCount += WriteGenderRecognizedCount;
             faceRecognizerService.OnCount += WriteCount;
+            faceRecognizerService.Load();
 
             var app = new CommandProcessor.Application();
             app.Run();
