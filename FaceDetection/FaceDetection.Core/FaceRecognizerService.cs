@@ -210,7 +210,7 @@ namespace FaceDetection.Core
             {
                 foreach (var femaleImage in femaleImages)
                 {
-                   // femaleImage._EqualizeHist();
+                    // femaleImage._EqualizeHist();
                     var grayImage = femaleImage.Convert<Gray, byte>();
                     var detectedFace = DetectFace(grayImage);
                     if (detectedFace != null)

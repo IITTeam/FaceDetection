@@ -78,6 +78,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandProcessor\AddFaceCommand.cs" />
+    <Compile Include="CommandProcessor\Application.cs" />
+    <Compile Include="CommandProcessor\CutFacesCommand.cs" />
+    <Compile Include="CommandProcessor\DetectCommand.cs" />
+    <Compile Include="CommandProcessor\ExitCommand.cs" />
+    <Compile Include="CommandProcessor\HelpCommand.cs" />
+    <Compile Include="CommandProcessor\ICommand.cs" />
+    <Compile Include="CommandProcessor\LoadCommand.cs" />
+    <Compile Include="CommandProcessor\TrainCommand.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

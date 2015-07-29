@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Windows.Forms;
 using Emgu.CV;
 using Emgu.CV.Structure;
@@ -20,84 +19,24 @@ namespace FaceDetection
             var exitFlag = false;
             ServicesWorker.Registration(new CoreModule());
 
-            var ts = ServicesWorker.GetInstance<FaceRecognizerService>();
-            var dbs = ServicesWorker.GetInstance<DatabaseService>();
-            var vs = ServicesWorker.GetInstance<VoiceAssistantService>();
-            ts.FaceCascadeClassifier =
+            var faceRecognizerService = ServicesWorker.GetInstance<FaceRecognizerService>();
+            faceRecognizerService.FaceCascadeClassifier =
                 new CascadeClassifier(Application.StartupPath + "/Cascade/haarcascade_frontalface_default.xml");
-            ts.Recognized += WriteResult;
-            ts.GenderRecognized += WriteResult;
-            ts.OnGenderCount += WriteGenderRecognizedCount;
-            ts.OnCount += WriteCount;
+            faceRecognizerService.Recognized += WriteResult;
+            faceRecognizerService.GenderRecognized += WriteResult;
+            faceRecognizerService.OnGenderCount += WriteGenderRecognizedCount;
+            faceRecognizerService.OnCount += WriteCount;
 
-            while (!exitFlag)
-            {
-                Console.Write(">> ");
-                var inputCommand = Console.ReadLine();
-
-                switch (inputCommand)
-                {
-                    case "sample":
-                        Console.WriteLine(@"Введите имя человека и встаньте перед камерой.");
-                        Console.WriteLine(@"Пожалуйста, во время записи постарайтесь" + "\n" + @"продемонстрировать разные выражения лица");
-                        var name = Console.ReadLine();
-                        try
-                        {
-                            ts.AddFaces(name);
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex.Message);
-                        }
-                        break;
-                    case "train":
-                        ts.Train();
-                        break;
-                    case "traingender":
-                        ts.TrainGender(GetSamples("DetMale"), GetSamples("DetFemale"));
-                        break;
-                    case "detectGender":
-                        ts.DetectGender(GetSamples("Male"), GetSamples("Female"));
-                        break;
-                    case "load":
-                        ts.Load();
-                        break;
-                    case "check":
-                        try
-                        {
-                            var t = new Thread(ts.StartCapture);
-                            t.Start();
-
-                            if (Console.ReadKey() != null)
-                            {
-                                t.Abort();
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex.Message);
-                        }
-                        break;
-                    case "say":
-                        vs.SayText("Привет, незнакомка !");
-                        break;
-                    case "exit":
-                        exitFlag = true;
-                        break;
-                    case "help":
-                        Console.WriteLine("train check exit");
-                        break;
-                    default:
-                        Console.WriteLine("Неверная команда!");
-                        break;
-                }
-            }
+            var app = new CommandProcessor.Application();
+            app.Run();
+            Console.ReadKey();
         }
 
         private static void WriteGenderRecognizedCount(int f, int m)
         {
             Console.WriteLine("F: " + f + ", M: " + m);
         }
+
         private static void WriteCount(int count, int average)
         {
             Console.WriteLine("Записано " + count + "/" + average);
