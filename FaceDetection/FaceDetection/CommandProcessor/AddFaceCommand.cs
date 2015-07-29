@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using FaceDetection.Core;
 
@@ -24,7 +25,10 @@ namespace FaceDetection.CommandProcessor
                 Console.WriteLine(@"Пожалуйста, во время записи постарайтесь" + @"" +
                                   @"продемонстрировать разные выражения лица");
                 var name = Console.ReadLine();
-                ServicesWorker.GetInstance<FaceRecognizerService>().AddImagesToHuman(name);
+                var images = ServicesWorker.GetInstance<FaceRecognizerService>().AddImagesToHuman(name);
+                Directory.CreateDirectory("Images\\" + name);
+                foreach (var img in images)
+                    img.Save("Images\\" + name + "\\" + images.IndexOf(img) + ".jpg");
             }
             catch (Exception ex)
             {

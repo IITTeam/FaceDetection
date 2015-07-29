@@ -131,11 +131,11 @@ namespace FaceDetection.Core
 
         public void Load()
         {
+            ServicesWorker.GetInstance<HumanService>().LoadFromDB();
             //humanService.People.Clear();
             if (File.Exists("facerecognizer"))
             {
-                _faceRecognizer.Load("facerecognizer");
-                ServicesWorker.GetInstance<HumanService>().LoadFromDB();
+                _faceRecognizer.Load("facerecognizer");   
                 //foreach (var human in humanService.People)
                 //{
                 //    var fileNames = Directory.GetFiles("Images\\" + human.Name, "*.jpg");
