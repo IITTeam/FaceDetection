@@ -13,11 +13,13 @@ namespace FaceDetection.Core
 {
     public class FaceRecognizerService
     {
-        public delegate void CounterContainer(int f, int m);
+        public delegate void CounterGenderContainer(int f, int m);
 
         public delegate void GenderRecognizeContainer(bool gender, double distance);
 
         public delegate void RecognizeContainer(string name, double distance);
+
+        public delegate void CounterContainer(int c, int a);
 
         private const int FaceCount = 10;
 
@@ -42,6 +44,7 @@ namespace FaceDetection.Core
         public CascadeClassifier FaceCascadeClassifier { get; set; }
         public event RecognizeContainer Recognized;
         public event GenderRecognizeContainer GenderRecognized;
+        public event CounterGenderContainer OnGenderCount;
         public event CounterContainer OnCount;
         //public double StartCapture(Image<Bgr, byte> image)
         //{
@@ -116,6 +119,7 @@ namespace FaceDetection.Core
                     Directory.CreateDirectory("Images\\" + name);
                     detectedFace.Save("Images\\" + name + "\\" + count + ".jpg");
                     count++;
+                    OnCount(count, FaceCount);
                     Thread.Sleep(500);
                 }
             }
@@ -240,7 +244,7 @@ namespace FaceDetection.Core
 
             //_genderFaceRecognizer.Train(allImages.ToArray(), idList.ToArray());
             //_genderFaceRecognizer.Save("genderfacerecognizer");
-            OnCount(fCount, mCount);
+            OnGenderCount(fCount, mCount);
         }
 
         /// <summary>
@@ -294,7 +298,7 @@ namespace FaceDetection.Core
 
             _genderFaceRecognizer.Train(allImages.ToArray(), idList.ToArray());
             _genderFaceRecognizer.Save("genderfacerecognizer");
-            OnCount(fCount, mCount);
+            OnGenderCount(fCount, mCount);
         }
     }
 }

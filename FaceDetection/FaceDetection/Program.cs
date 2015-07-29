@@ -27,6 +27,7 @@ namespace FaceDetection
                 new CascadeClassifier(Application.StartupPath + "/Cascade/haarcascade_frontalface_default.xml");
             ts.Recognized += WriteResult;
             ts.GenderRecognized += WriteResult;
+            ts.OnGenderCount += WriteGenderRecognizedCount;
             ts.OnCount += WriteCount;
 
             while (!exitFlag)
@@ -93,9 +94,13 @@ namespace FaceDetection
             }
         }
 
-        private static void WriteCount(int f, int m)
+        private static void WriteGenderRecognizedCount(int f, int m)
         {
             Console.WriteLine("F: " + f + ", M: " + m);
+        }
+        private static void WriteCount(int count, int average)
+        {
+            Console.WriteLine("Записано " + count + "/" + average);
         }
 
         private static void WriteResult(string name, double distance)
