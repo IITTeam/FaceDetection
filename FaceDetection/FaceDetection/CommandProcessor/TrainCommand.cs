@@ -18,7 +18,7 @@ namespace FaceDetection.CommandProcessor
             get { return "- обучение программы"; }
         }
 
-        public void Execute(List<string> parameters)
+        public void Execute()
         {
             ServicesWorker.GetInstance<FaceRecognizerService>().TrainFaceRecognizer();
             //Console.WriteLine(@"1 - Обучение ранее запомненным  лицам" + @"2 - Обучение для распознавания пола");

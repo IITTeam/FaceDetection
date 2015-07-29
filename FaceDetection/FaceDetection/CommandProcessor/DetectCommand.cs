@@ -19,7 +19,7 @@ namespace FaceDetection.CommandProcessor
             get { return "- распознавание людей"; }
         }
 
-        public void Execute(List<string> parameters)
+        public void Execute()
         {
             try
             {

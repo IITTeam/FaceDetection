@@ -23,14 +23,14 @@ namespace FaceDetection.CommandProcessor
             _app = app;
         }
 
-        public void Execute(List<string> parameters)
+        public void Execute()
         {
-            Console.WriteLine("=====================================================================");
+            Console.WriteLine(@"=====================================================================");
             foreach (var item in _app.AvailableCommands)
             {
                 Console.WriteLine(item.Name + " " + item.Description);
             }
-            Console.WriteLine("=====================================================================");
+            Console.WriteLine(@"=====================================================================");
         }
     }
 }

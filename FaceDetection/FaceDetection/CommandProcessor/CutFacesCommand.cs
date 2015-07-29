@@ -21,7 +21,7 @@ namespace FaceDetection.CommandProcessor
             get { return "- вырезает лица из фотографий"; }
         }
 
-        public void Execute(List<string> parameters)
+        public void Execute()
         {
             ServicesWorker.GetInstance<FaceRecognizerService>().DetectGender(GetSamples("Male"), GetSamples("Female"));
         }

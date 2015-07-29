@@ -21,7 +21,7 @@ namespace FaceDetection.CommandProcessor
             _app = app;
         }
 
-        public void Execute(List<string> parameters)
+        public void Execute()
         {
             Environment.Exit(0);
         }

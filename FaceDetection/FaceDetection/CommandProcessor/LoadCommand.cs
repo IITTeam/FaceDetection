@@ -18,7 +18,7 @@ namespace FaceDetection.CommandProcessor
             get { return "- загружает обученный сервис"; }
         }
 
-        public void Execute(List<string> parameters)
+        public void Execute()
         {
             ServicesWorker.GetInstance<FaceRecognizerService>().Load();
         }

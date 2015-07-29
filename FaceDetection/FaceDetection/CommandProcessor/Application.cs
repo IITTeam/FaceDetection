@@ -23,7 +23,8 @@ namespace FaceDetection.CommandProcessor
 
         public void Run()
         {
-            Console.WriteLine(@"Для получения справки по допустимым командам введите help  и нажмите Enter");
+            AvailableCommands.FirstOrDefault(command => command.Name == "help").Execute();
+            //  Console.WriteLine(@"Для получения справки по допустимым командам введите help  и нажмите Enter");
             while (true)
             {
                 Console.Write('>');
@@ -36,7 +37,7 @@ namespace FaceDetection.CommandProcessor
                     {
                         str.RemoveAt(0);
                         Parameters = str;
-                        selectedCommand.Execute(Parameters);
+                        selectedCommand.Execute();
                     }
                     else
                         Console.WriteLine(@"Такой команды нет. Попробуйте еще раз.");

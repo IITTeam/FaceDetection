@@ -8,6 +8,6 @@ namespace FaceDetection.CommandProcessor
 
         string Description { get; }
 
-        void Execute(List<string> parameters);
+        void Execute();
     }
 }

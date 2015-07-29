@@ -21,7 +21,7 @@ namespace FaceDetection.CommandProcessor
             get { return "- обучение для распознавания пола"; }
         }
 
-        public void Execute(List<string> parameters)
+        public void Execute()
         {
             try
             {

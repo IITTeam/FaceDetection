@@ -17,7 +17,7 @@ namespace FaceDetection.CommandProcessor
             get { return "- добавляет человека"; }
         }
 
-        public void Execute(List<string> parameters)
+        public void Execute()
         {
             try
             {
