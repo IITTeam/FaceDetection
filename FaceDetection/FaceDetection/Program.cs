@@ -37,7 +37,8 @@ namespace FaceDetection
                 switch (inputCommand)
                 {
                     case "sample":
-                        Console.WriteLine("Введите имя человека и встаньте перед камерой ");
+                        Console.WriteLine(@"Введите имя человека и встаньте перед камерой.");
+                        Console.WriteLine(@"Пожалуйста, во время записи постарайтесь" + "\n" + @"продемонстрировать разные выражения лица");
                         var name = Console.ReadLine();
                         try
                         {
