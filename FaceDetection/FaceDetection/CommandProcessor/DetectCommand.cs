@@ -23,7 +23,7 @@ namespace FaceDetection.CommandProcessor
         {
             try
             {
-                var t = new Thread(ServicesWorker.GetInstance<FaceRecognizerService>().DetectFace);
+                var t = new Thread(ServicesWorker.GetInstance<FaceRecognizerService>().DetectHuman);
                 t.Start();
 
                 if (Console.ReadKey() != null)

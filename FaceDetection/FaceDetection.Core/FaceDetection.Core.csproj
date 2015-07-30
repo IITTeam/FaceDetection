@@ -68,6 +68,7 @@
   <ItemGroup>
     <Compile Include="CoreModule.cs" />
     <Compile Include="DatabaseService.cs" />
+    <Compile Include="Exceptions.cs" />
     <Compile Include="FaceRecognizerService.cs" />
     <Compile Include="Human.cs" />
     <Compile Include="HumanService.cs" />

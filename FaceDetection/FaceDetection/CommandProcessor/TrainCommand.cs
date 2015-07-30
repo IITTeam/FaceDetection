@@ -20,22 +20,14 @@ namespace FaceDetection.CommandProcessor
 
         public void Execute()
         {
-            ServicesWorker.GetInstance<FaceRecognizerService>().TrainFaceRecognizer();
-            //Console.WriteLine(@"1 - Обучение ранее запомненным  лицам" + @"2 - Обучение для распознавания пола");
-            //var choice = Convert.ToInt32(Console.ReadLine());
-            //switch (choice)
-            //{
-            //    case 1:
-            //        ServicesWorker.GetInstance<FaceRecognizerService>().TrainFaceRecognizer();
-            //        break;
-            //    case 2:
-            //        ServicesWorker.GetInstance<FaceRecognizerService>()
-            //            .TrainGender(GetSamples("DetMale"), GetSamples("DetFemale"));
-            //        break;
-            //    default:
-            //        Console.WriteLine(@"Нет такой команды");
-            //        break;
-            //}
+            try
+            {
+                ServicesWorker.GetInstance<FaceRecognizerService>().TrainFaceRecognizer();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
     }

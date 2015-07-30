@@ -31,7 +31,7 @@ namespace FaceDetection.CommandProcessor
                 var str = Console.ReadLine().ToLower().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToList();
                 if (str.Count != 0)
                 {
-                    var selectedCommand = AvailableCommands.FirstOrDefault(command => command.Name == str[0]);
+                    var selectedCommand = AvailableCommands.FirstOrDefault(command => command.Name.ToLower() == str[0]);
 
                     if (selectedCommand != null)
                     {

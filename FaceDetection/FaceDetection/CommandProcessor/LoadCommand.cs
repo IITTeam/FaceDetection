@@ -20,7 +20,14 @@ namespace FaceDetection.CommandProcessor
 
         public void Execute()
         {
-            ServicesWorker.GetInstance<FaceRecognizerService>().Load();
+            try
+            {
+                ServicesWorker.GetInstance<FaceRecognizerService>().Load();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 }

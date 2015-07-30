@@ -39,7 +39,7 @@ namespace FaceDetection
 
         private static void WriteCount(int count, int average)
         {
-            Console.WriteLine("Записано " + count + "/" + average);
+            Console.WriteLine("Распознано " + count + "/" + average);
         }
 
         private static void WriteResult(string name, double distance)

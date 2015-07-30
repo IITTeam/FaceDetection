@@ -22,11 +22,11 @@ namespace FaceDetection.CommandProcessor
             try
             {
                 Console.WriteLine(@"Введите имя человека и встаньте перед камерой.");
-                Console.WriteLine(@"Пожалуйста, во время записи постарайтесь" + @"" +
+                Console.WriteLine(@"Пожалуйста, во время записи постарайтесь" + "\n" +
                                   @"продемонстрировать разные выражения лица");
                 var name = Console.ReadLine();
-                var images = ServicesWorker.GetInstance<FaceRecognizerService>().AddImagesToHuman(name);
                 Directory.CreateDirectory("Images\\" + name);
+                var images = ServicesWorker.GetInstance<FaceRecognizerService>().AddImagesToHuman(name);
                 foreach (var img in images)
                     img.Save("Images\\" + name + "\\" + images.IndexOf(img) + ".jpg");
             }

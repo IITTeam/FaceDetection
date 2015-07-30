@@ -26,7 +26,11 @@ namespace FaceDetection.CommandProcessor
             try
             {
                 ServicesWorker.GetInstance<FaceRecognizerService>()
-                        .TrainGender(GetSamples("DetMale"), GetSamples("DetFemale"));
+                    .TrainGender(GetSamples("DetMale"), GetSamples("DetFemale"));
+            }
+            catch (DirectoryNotFoundException)
+            {
+                Console.WriteLine(@"Нет изображений для обучения распознаванию пола!");
             }
             catch (Exception ex)
             {

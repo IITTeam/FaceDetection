@@ -38,7 +38,7 @@ namespace FaceDetection.Core
         public event CounterGenderContainer OnGenderCount;
         public event CounterContainer OnCount;
 
-        public void DetectFace()
+        public void DetectHuman()
         {
             var capture = new Capture();
             while (true)
@@ -46,8 +46,6 @@ namespace FaceDetection.Core
                 try
                 {
                     var image = capture.QueryFrame().ToImage<Gray, byte>();
-                    //image._EqualizeHist();
-
                     var detectedFace = DetectFace(image);
                     if (detectedFace != null)
                     {
@@ -97,14 +95,10 @@ namespace FaceDetection.Core
             while (count < FaceCount)
             {
                 var image = capture.QueryFrame().ToImage<Gray, byte>();
-                //image._EqualizeHist();
-
                 var detectedFace = DetectFace(image);
                 if (detectedFace != null)
                 {
                     images.Add(detectedFace);
-                    //Directory.CreateDirectory("Images\\" + name);
-                    //detectedFace.Save("Images\\" + name + "\\" + count + ".jpg");
                     count++;
                     OnCount(count, FaceCount);
                     Thread.Sleep(500);
@@ -124,6 +118,10 @@ namespace FaceDetection.Core
                 allImages.AddRange(human.ImagesEmgu);
                 idList.AddRange(human.ImagesEmgu.Select(hm => human.Id));
             }
+            if (idList.Count == 0 || allImages.Count == 0)
+            {
+                throw new NoHumanException("Нет данных о людях для обучения!");
+            }
             _faceRecognizer.Train(allImages.ToArray(), idList.ToArray());
             _faceRecognizerTrained = true;
             _faceRecognizer.Save("facerecognizer");
@@ -132,16 +130,9 @@ namespace FaceDetection.Core
         public void Load()
         {
             ServicesWorker.GetInstance<HumanService>().LoadFromDB();
-            //humanService.People.Clear();
             if (File.Exists("facerecognizer"))
             {
-                _faceRecognizer.Load("facerecognizer");   
-                //foreach (var human in humanService.People)
-                //{
-                //    var fileNames = Directory.GetFiles("Images\\" + human.Name, "*.jpg");
-                //    human.ImagesEmgu = new List<Image<Gray, byte>>(fileNames.Select(fileName => new Image<Gray, byte>(fileName)).ToList());
-                //    //humanService.People.Add(human);
-                //}
+                _faceRecognizer.Load("facerecognizer");
                 _faceRecognizerTrained = true;
             }
             if (File.Exists("genderfacerecognizer"))
@@ -157,19 +148,16 @@ namespace FaceDetection.Core
                 if (facesDetected.Length > 0)
                 {
                     var maxRectangle = facesDetected.First();
-                    //Action for each element detected
                     foreach (
                         var tRectangle in
                             facesDetected.Where(tRectangle => tRectangle.Size.Width > maxRectangle.Size.Width))
                     {
                         maxRectangle = tRectangle;
                     }
-                    //This will focus in on the face from the haar results its not perfect but it will remove a majoriy
-                    //of the background noise
-                    maxRectangle.X += (int) (maxRectangle.Height*0.15);
-                    maxRectangle.Y += (int) (maxRectangle.Width*0.22);
-                    maxRectangle.Height -= (int) (maxRectangle.Height*0.3);
-                    maxRectangle.Width -= (int) (maxRectangle.Width*0.35);
+                    maxRectangle.X += (int)(maxRectangle.Height * 0.15);
+                    maxRectangle.Y += (int)(maxRectangle.Width * 0.22);
+                    maxRectangle.Height -= (int)(maxRectangle.Height * 0.3);
+                    maxRectangle.Width -= (int)(maxRectangle.Width * 0.35);
 
                     var result = srcImage.Copy(maxRectangle)
                         .Resize(100, 100, Inter.Cubic);
@@ -195,7 +183,6 @@ namespace FaceDetection.Core
             {
                 foreach (var femaleImage in femaleImages)
                 {
-                    // femaleImage._EqualizeHist();
                     var grayImage = femaleImage.Convert<Gray, byte>();
                     var detectedFace = DetectFace(grayImage);
                     if (detectedFace != null)
@@ -207,7 +194,6 @@ namespace FaceDetection.Core
 
                 foreach (var maleImage in maleImages)
                 {
-                    //maleImage._EqualizeHist();
                     var grayImage = maleImage.Convert<Gray, byte>();
                     var detectedFace = DetectFace(grayImage);
                     if (detectedFace != null)

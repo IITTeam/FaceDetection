@@ -23,7 +23,20 @@ namespace FaceDetection.CommandProcessor
 
         public void Execute()
         {
-            ServicesWorker.GetInstance<FaceRecognizerService>().DetectGender(GetSamples("Male"), GetSamples("Female"));
+            try
+            {
+
+                ServicesWorker.GetInstance<FaceRecognizerService>()
+                    .DetectGender(GetSamples("Male"), GetSamples("Female"));
+            }
+            catch (DirectoryNotFoundException)
+            {
+                Console.WriteLine(@"Нет изображений для выделения лиц!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
         private static List<Image<Gray, byte>> GetSamples(string pathName)
