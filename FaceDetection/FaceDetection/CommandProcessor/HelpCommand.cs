@@ -7,15 +7,9 @@ namespace FaceDetection.CommandProcessor
 {
     public class HelpCommand : ICommand
     {
-        public string Name
-        {
-            get { return "help"; }
-        }
+        public string Name => "help";
 
-        public string Description
-        {
-            get { return "- вводит список доступных команд;"; }
-        }
+        public string Description => "- вводит список доступных команд;";
         private readonly Application _app;
 
         public HelpCommand(Application app)

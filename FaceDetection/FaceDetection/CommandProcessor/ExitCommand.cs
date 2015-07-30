@@ -5,15 +5,9 @@ namespace FaceDetection.CommandProcessor
 {
     public class ExitCommand : ICommand
     {
-        public string Name
-        {
-            get { return "exit"; }
-        }
+        public string Name => "exit";
 
-        public string Description
-        {
-            get { return "- завершает работу приложения."; }
-        }
+        public string Description => "- завершает работу приложения.";
         private Application _app;
 
         public ExitCommand(Application app)

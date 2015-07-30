@@ -1,14 +1,8 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using Emgu.CV;
-using Emgu.CV.Structure;
 using NDatabase;
 using NDatabase.Api;
-using NDatabase.Api.Query;
 
 namespace FaceDetection.Core
 {
@@ -16,13 +10,9 @@ namespace FaceDetection.Core
     {
         private const string DbName = "humans.ndb";
 
-        public DatabaseService()
-        {
-        }
-
         public void Insert<T>(int id, object obj) where T : class
         {
-            if (this.Query<T>(new Dictionary<string, object> { { "Id", id } }) == null)
+            if (Query<T>(new Dictionary<string, object> {{"Id", id}}) == null)
             {
                 using (var db = OdbFactory.Open(DbName))
                 {
@@ -48,7 +38,7 @@ namespace FaceDetection.Core
                     IObjectSet<T> result = null;
                     foreach (var param in @params)
                     {
-                        IQuery query = db.Query<T>();
+                        var query = db.Query<T>();
                         query.Descend(param.Key).Constrain(param.Value).Equal();
                         result = query.Execute<T>();
                     }

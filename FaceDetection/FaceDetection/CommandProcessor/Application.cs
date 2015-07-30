@@ -23,7 +23,7 @@ namespace FaceDetection.CommandProcessor
 
         public void Run()
         {
-            AvailableCommands.FirstOrDefault(command => command.Name == "help").Execute();
+            AvailableCommands.FirstOrDefault(command => command.Name == "help")?.Execute();
             //  Console.WriteLine(@"Для получения справки по допустимым командам введите help  и нажмите Enter");
             while (true)
             {

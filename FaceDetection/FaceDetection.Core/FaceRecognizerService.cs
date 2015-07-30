@@ -22,9 +22,9 @@ namespace FaceDetection.Core
         public delegate void RecognizeContainer(string name, double distance);
 
         private const int FaceCount = 10;
-        private bool _faceRecognizerTrained;
         private readonly FaceRecognizer _faceRecognizer;
         private readonly FaceRecognizer _genderFaceRecognizer;
+        private bool _faceRecognizerTrained;
 
         public FaceRecognizerService()
         {
@@ -57,7 +57,7 @@ namespace FaceDetection.Core
                         var gender = _genderFaceRecognizer.Predict(detectedFace);
                         if (gender.Label != -1)
                         {
-                            if (GenderRecognized != null) GenderRecognized(gender.Label != 0, gender.Distance);
+                            GenderRecognized?.Invoke(gender.Label != 0, gender.Distance);
                         }
                     }
                 }
@@ -76,11 +76,11 @@ namespace FaceDetection.Core
                 var human = ServicesWorker.GetInstance<HumanService>().GetHumanFromId(result.Label);
                 if (human != null)
                 {
-                    if (Recognized != null) Recognized(human.Name, result.Distance);
+                    Recognized?.Invoke(human.Name, result.Distance);
                 }
                 else
                 {
-                    if (Recognized != null) Recognized(result.Label.ToString(), result.Distance);
+                    Recognized?.Invoke(result.Label.ToString(), result.Distance);
                 }
                 return true;
             }
@@ -129,7 +129,7 @@ namespace FaceDetection.Core
 
         public void Load()
         {
-            ServicesWorker.GetInstance<HumanService>().LoadFromDB();
+            ServicesWorker.GetInstance<HumanService>().LoadFromDb();
             if (File.Exists("facerecognizer"))
             {
                 _faceRecognizer.Load("facerecognizer");
@@ -145,27 +145,24 @@ namespace FaceDetection.Core
             {
                 var facesDetected = FaceCascadeClassifier.DetectMultiScale(srcImage, 1.2, 10, new Size(50, 50),
                     Size.Empty);
-                if (facesDetected.Length > 0)
+                if (facesDetected.Length <= 0) return null;
+                var maxRectangle = facesDetected.First();
+                foreach (
+                    var tRectangle in
+                        facesDetected.Where(tRectangle => tRectangle.Size.Width > maxRectangle.Size.Width))
                 {
-                    var maxRectangle = facesDetected.First();
-                    foreach (
-                        var tRectangle in
-                            facesDetected.Where(tRectangle => tRectangle.Size.Width > maxRectangle.Size.Width))
-                    {
-                        maxRectangle = tRectangle;
-                    }
-                    maxRectangle.X += (int)(maxRectangle.Height * 0.15);
-                    maxRectangle.Y += (int)(maxRectangle.Width * 0.22);
-                    maxRectangle.Height -= (int)(maxRectangle.Height * 0.3);
-                    maxRectangle.Width -= (int)(maxRectangle.Width * 0.35);
-
-                    var result = srcImage.Copy(maxRectangle)
-                        .Resize(100, 100, Inter.Cubic);
-                    result._EqualizeHist();
-
-                    return result;
+                    maxRectangle = tRectangle;
                 }
-                return null;
+                maxRectangle.X += (int) (maxRectangle.Height*0.15);
+                maxRectangle.Y += (int) (maxRectangle.Width*0.22);
+                maxRectangle.Height -= (int) (maxRectangle.Height*0.3);
+                maxRectangle.Width -= (int) (maxRectangle.Width*0.35);
+
+                var result = srcImage.Copy(maxRectangle)
+                    .Resize(100, 100, Inter.Cubic);
+                result._EqualizeHist();
+
+                return result;
             }
             catch (Exception ex)
             {

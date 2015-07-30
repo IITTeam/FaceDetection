@@ -11,15 +11,9 @@ namespace FaceDetection.CommandProcessor
 {
     public class CutFacesCommand : ICommand
     {
-        public string Name
-        {
-            get { return "cutFaces"; }
-        }
+        public string Name => "cutFaces";
 
-        public string Description
-        {
-            get { return "- вырезает лица из фотографий"; }
-        }
+        public string Description => "- вырезает лица из фотографий";
 
         public void Execute()
         {

@@ -1,25 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
+using System.Linq;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using FaceDetection.Core;
 
 namespace FaceDetection.CommandProcessor
 {
-    class TrainGenderCommand : ICommand
+    internal class TrainGenderCommand : ICommand
     {
-        public string Name
-        {
-            get { return "trainGender"; }
-        }
-
-        public string Description
-        {
-            get { return "- обучение для распознавания пола"; }
-        }
+        public string Name => "trainGender";
+        public string Description => "- обучение для распознавания пола";
 
         public void Execute()
         {

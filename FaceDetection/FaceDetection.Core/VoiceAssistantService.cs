@@ -26,7 +26,7 @@ namespace FaceDetection.Core
                     .FirstOrDefault(installedVoice => installedVoice.VoiceInfo.Culture.Name.Contains("ru-RU"));
             _synthesizer.SelectVoice(voice != null
                 ? voice.VoiceInfo.Name
-                : _synthesizer.GetInstalledVoices().FirstOrDefault().VoiceInfo.Name);
+                : _synthesizer.GetInstalledVoices().FirstOrDefault()?.VoiceInfo.Name);
             _synthesizer.Speak(text);
         }
 

@@ -9,15 +9,9 @@ namespace FaceDetection.CommandProcessor
 {
     public class DetectCommand : ICommand
     {
-        public string Name
-        {
-            get { return "detect"; }
-        }
+        public string Name => "detect";
 
-        public string Description
-        {
-            get { return "- распознавание людей"; }
-        }
+        public string Description => "- распознавание людей";
 
         public void Execute()
         {
