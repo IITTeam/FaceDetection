@@ -18,6 +18,7 @@ namespace FaceDetection.CommandProcessor
             AvailableCommands.Add(new LoadCommand());
             AvailableCommands.Add(new DetectCommand());
             AvailableCommands.Add(new TrainGenderCommand());
+            AvailableCommands.Add(new GenderByPhotoCommand());
             AvailableCommands.Add(new ExitCommand(this));
         }
 

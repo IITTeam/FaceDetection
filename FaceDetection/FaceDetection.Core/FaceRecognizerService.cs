@@ -244,5 +244,39 @@ namespace FaceDetection.Core
             _genderFaceRecognizer.Save("genderfacerecognizer");
             OnGenderCount(fCount, mCount);
         }
+
+        public double DetectGenderByPhoto(List<Image<Gray, byte>> images, bool gender)
+        {
+            int gen = gender ? 1 : 0;
+            var faces = new List<Image<Gray, byte>>();
+            var detectedGenderCount = 0;
+            Directory.CreateDirectory("Images\\DetectedTestMale");
+            Directory.CreateDirectory("Images\\DetectedTestFemale");
+            foreach (var image in images)
+            {
+                var detectedFace = DetectFace(image);
+                if (detectedFace != null)
+                {
+                    if (gender)
+                    {
+                        detectedFace.Save("Images\\DetectedTestMale\\" + images.IndexOf(image) + ".jpg");
+                    }
+                    else
+                    {
+                        detectedFace.Save("Images\\DetectedTestFemale\\" + images.IndexOf(image) + ".jpg");
+                    }
+                    faces.Add(detectedFace);
+                }
+            }
+            foreach (var face in faces)
+            {
+                var g = _genderFaceRecognizer.Predict(face);
+                if (g.Label == gen)
+                {
+                    detectedGenderCount++;
+                }
+            }
+            return (double)detectedGenderCount / faces.Count * 100;
+        }
     }
 }
