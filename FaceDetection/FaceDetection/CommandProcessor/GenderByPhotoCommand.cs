@@ -1,25 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using FaceDetection.Core;
 
 namespace FaceDetection.CommandProcessor
 {
-    class GenderByPhotoCommand : ICommand
+    internal class GenderByPhotoCommand : ICommand
     {
-        public string Name
-        {
-            get { return "genderphoto"; }
-        }
+        public string Name => "genderphoto";
 
-        public string Description
-        {
-            get { return "- распознавание пола человека на фотографии"; }
-        }
+        public string Description => "- распознавание пола человека на фотографии";
 
         public void Execute()
         {
@@ -32,7 +24,8 @@ namespace FaceDetection.CommandProcessor
 
                 fileNames = Directory.GetFiles("Images\\TestFemale\\", "*.jpg");
                 var femaleImg = fileNames.Select(fileName => new Image<Gray, byte>(fileName)).ToList();
-                var persentFemale = ServicesWorker.GetInstance<FaceRecognizerService>().DetectGenderByPhoto(femaleImg, false);
+                var persentFemale = ServicesWorker.GetInstance<FaceRecognizerService>()
+                    .DetectGenderByPhoto(femaleImg, false);
                 Console.WriteLine(@"% правильно распознанных женщин " + persentFemale);
             }
             catch (Exception ex)
