@@ -1,4 +1,4 @@
-﻿using FaceDetection.Core;
+﻿
 namespace FaceDetection.Core
 {
     /// <summary>

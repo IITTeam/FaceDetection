@@ -153,10 +153,10 @@ namespace FaceDetection.Core
                 {
                     maxRectangle = tRectangle;
                 }
-                maxRectangle.X += (int) (maxRectangle.Height*0.15);
-                maxRectangle.Y += (int) (maxRectangle.Width*0.22);
-                maxRectangle.Height -= (int) (maxRectangle.Height*0.3);
-                maxRectangle.Width -= (int) (maxRectangle.Width*0.35);
+                maxRectangle.X += (int)(maxRectangle.Height * 0.15);
+                maxRectangle.Y += (int)(maxRectangle.Width * 0.22);
+                maxRectangle.Height -= (int)(maxRectangle.Height * 0.3);
+                maxRectangle.Width -= (int)(maxRectangle.Width * 0.35);
 
                 var result = srcImage.Copy(maxRectangle)
                     .Resize(100, 100, Inter.Cubic);
@@ -220,26 +220,19 @@ namespace FaceDetection.Core
             var fCount = 0;
             var mCount = 0;
 
-            try
+            foreach (var femaleImage in femaleImages)
             {
-                foreach (var femaleImage in femaleImages)
-                {
-                    allImages.Add(femaleImage);
-                    idList.Add(0);
-                    fCount++;
-                }
-
-                foreach (var maleImage in maleImages)
-                {
-                    allImages.Add(maleImage);
-                    idList.Add(1);
-                    mCount++;
-                }
-            }
-            catch (Exception ex)
-            {
+                allImages.Add(femaleImage);
+                idList.Add(0);
+                fCount++;
             }
 
+            foreach (var maleImage in maleImages)
+            {
+                allImages.Add(maleImage);
+                idList.Add(1);
+                mCount++;
+            }
             _genderFaceRecognizer.Train(allImages.ToArray(), idList.ToArray());
             _genderFaceRecognizer.Save("genderfacerecognizer");
             OnGenderCount(fCount, mCount);

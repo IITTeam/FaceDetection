@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using NDatabase.Api;
@@ -11,7 +9,6 @@ namespace FaceDetection.Core
     {
         public int Id { get; private set; }
         public string Name { get; private set; }
-        public List<Bitmap> Images { get; set; }
         [NonPersistent]
         public List<Image<Gray, byte>> ImagesEmgu;
 

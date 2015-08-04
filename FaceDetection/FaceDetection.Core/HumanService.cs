@@ -8,13 +8,11 @@ namespace FaceDetection.Core
 {
     public class HumanService
     {
+        public List<Human> People { get; set; }
         public HumanService()
         {
             People = new List<Human>();
         }
-
-        public List<Human> People { get; set; }
-
         public void AddHuman(string label, List<Image<Gray, byte>> images)
         {
             var id = People.Count;
@@ -22,7 +20,6 @@ namespace FaceDetection.Core
             People.Add(human);
             ServicesWorker.GetInstance<DatabaseService>().Insert<Human>(id, human);
         }
-
         public Human GetHumanFromId(int id)
         {
             return
