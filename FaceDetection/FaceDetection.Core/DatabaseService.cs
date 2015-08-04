@@ -21,11 +21,11 @@ namespace FaceDetection.Core
             }
         }
 
-        public void Delete(object obj)
+        public void Delete<T>(object obj) where T : class
         {
             using (var db = OdbFactory.Open(DbName))
             {
-                db.Delete(obj);
+                db.Delete(obj as T);
             }
         }
 

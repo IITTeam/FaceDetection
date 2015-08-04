@@ -31,10 +31,15 @@ namespace FaceDetection.Core
             People.Clear();
             foreach (var human in ServicesWorker.GetInstance<DatabaseService>().QueryByClassName<Human>())
             {
-                var fileNames = Directory.GetFiles("Images\\" + human.Name, "*.jpg");
-                human.ImagesEmgu =
-                    new List<Image<Gray, byte>>(fileNames.Select(fileName => new Image<Gray, byte>(fileName)).ToList());
-                People.Add(human);
+                if (Directory.Exists("Images\\" + human.Name))
+                {
+                    var fileNames = Directory.GetFiles("Images\\" + human.Name, "*.jpg");
+                    human.ImagesEmgu =
+                        new List<Image<Gray, byte>>(fileNames.Select(fileName => new Image<Gray, byte>(fileName)).ToList());
+                    People.Add(human);
+                }
+                else
+                    ServicesWorker.GetInstance<DatabaseService>().Delete<Human>(human);
             }
         }
     }
