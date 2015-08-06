@@ -28,7 +28,7 @@ namespace FaceDetection.Core
 
         public FaceRecognizerService()
         {
-            _faceRecognizer = new LBPHFaceRecognizer(1, 8, 8, 8, 80);
+            _faceRecognizer = new LBPHFaceRecognizer(2, 8, 6, 6, 50);
             _genderFaceRecognizer = new FisherFaceRecognizer();
             //_genderFaceRecognizer = new LBPHFaceRecognizer(1, 8, 8, 8, 100);
         }
