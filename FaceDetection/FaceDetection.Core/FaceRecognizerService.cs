@@ -29,7 +29,8 @@ namespace FaceDetection.Core
         public FaceRecognizerService()
         {
             _faceRecognizer = new LBPHFaceRecognizer(1, 8, 8, 8, 80);
-            _genderFaceRecognizer = new LBPHFaceRecognizer(1, 8, 8, 8, 100);
+            _genderFaceRecognizer = new FisherFaceRecognizer();
+            //_genderFaceRecognizer = new LBPHFaceRecognizer(1, 8, 8, 8, 100);
         }
 
         public CascadeClassifier FaceCascadeClassifier { get; set; }

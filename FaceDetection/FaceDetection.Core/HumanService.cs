@@ -29,6 +29,7 @@ namespace FaceDetection.Core
         public void LoadFromDb()
         {
             People.Clear();
+            bool has_deleting_objs = false;
             foreach (var human in ServicesWorker.GetInstance<DatabaseService>().QueryByClassName<Human>())
             {
                 if (Directory.Exists("Images\\" + human.Name))
@@ -39,7 +40,15 @@ namespace FaceDetection.Core
                     People.Add(human);
                 }
                 else
-                    ServicesWorker.GetInstance<DatabaseService>().Delete<Human>(human);
+                    has_deleting_objs = true;
+            }
+            if (has_deleting_objs)
+            {
+                ServicesWorker.GetInstance<DatabaseService>().Clear();
+                foreach (var human in People)
+                {
+                    ServicesWorker.GetInstance<DatabaseService>().Insert<Human>(human.Id, human);
+                }
             }
         }
     }

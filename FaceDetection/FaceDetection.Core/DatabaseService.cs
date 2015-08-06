@@ -21,13 +21,15 @@ namespace FaceDetection.Core
             }
         }
 
-        public void Delete<T>(object obj) where T : class
-        {
-            using (var db = OdbFactory.Open(DbName))
-            {
-                db.Delete(obj as T);
-            }
-        }
+        //public void Delete<T>(object obj) where T : class
+        //{
+        //    using (var db = OdbFactory.Open(DbName))
+        //    {
+        //        Human h = new Human(10, "qq", new List<Emgu.CV.Image<Emgu.CV.Structure.Gray, byte>>());
+        //        T hum = obj as T;
+        //        db.Delete(h);
+        //    }
+        //}
 
         public T Query<T>(Dictionary<string, object> @params) where T : class
         {
